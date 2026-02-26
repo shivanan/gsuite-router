@@ -58,9 +58,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return fileRouter.handleFileOpen(url: url)
     }
 
+    func application(_ sender: NSApplication, openFiles filenames: [String]) {
+        shouldTerminateAfterProcessing = true
+        filenames.forEach { _ = fileRouter.handleFileOpen(url: urlFromDockPath($0)) }
+        NSApp.reply(toOpenOrPrint: .success)
+    }
+
     func application(_ application: NSApplication, open urls: [URL]) {
         shouldTerminateAfterProcessing = true
         urls.forEach { _ = fileRouter.handleFileOpen(url: $0) }
+        NSApp.reply(toOpenOrPrint: .success)
     }
 
     private func configureMenu() {
@@ -123,5 +130,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         alert.informativeText = message
         alert.addButton(withTitle: "OK")
         alert.runModal()
+    }
+
+    private func urlFromDockPath(_ path: String) -> URL {
+        let decoded = path.removingPercentEncoding ?? path
+        print("HERE WE GO \(path) : \(decoded)")
+        showAlert(title: "Received Path", message: "Original: \(path)\nDecoded: \(decoded)")
+        
+        return URL(fileURLWithPath: decoded)
     }
 }
