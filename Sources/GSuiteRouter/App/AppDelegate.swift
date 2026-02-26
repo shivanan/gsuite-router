@@ -1,0 +1,58 @@
+import AppKit
+import Combine
+
+@MainActor
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    private var mainWindowController: MainWindowController?
+    private let authenticator = GoogleAuthenticator()
+    private lazy var driveUploader = DriveUploader(authenticator: authenticator)
+    private lazy var fileRouter = FileRouter(driveUploader: driveUploader, authenticator: authenticator)
+    private lazy var viewModel = MainViewModel(authenticator: authenticator, fileRouter: fileRouter)
+    private var cancellables: Set<AnyCancellable> = []
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        configureMenu()
+        mainWindowController = MainWindowController(viewModel: viewModel)
+        mainWindowController?.showWindow(self)
+        NSApp.activate(ignoringOtherApps: true)
+        authenticator.restore()
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if flag == false {
+            mainWindowController?.showWindow(self)
+        }
+        NSApp.activate(ignoringOtherApps: true)
+        return true
+    }
+
+    func application(_ sender: NSApplication, openFile filename: String) -> Bool {
+        let url = URL(fileURLWithPath: filename)
+        return fileRouter.handleFileOpen(url: url)
+    }
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        urls.forEach { _ = fileRouter.handleFileOpen(url: $0) }
+    }
+
+    private func configureMenu() {
+        let mainMenu = NSMenu()
+
+        let appItem = NSMenuItem()
+        mainMenu.addItem(appItem)
+        let appMenu = NSMenu()
+        appMenu.addItem(withTitle: "About GSuite Router", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        appMenu.addItem(NSMenuItem.separator())
+        appMenu.addItem(withTitle: "Quit GSuite Router", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appItem.submenu = appMenu
+
+        let windowItem = NSMenuItem()
+        mainMenu.addItem(windowItem)
+        let windowMenu = NSMenu(title: "Window")
+        windowMenu.addItem(withTitle: "Minimize", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
+        windowMenu.addItem(withTitle: "Close", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        windowItem.submenu = windowMenu
+
+        NSApplication.shared.mainMenu = mainMenu
+    }
+}
