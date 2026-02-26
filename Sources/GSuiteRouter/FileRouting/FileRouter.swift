@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 
 final class FileRouter {
     enum Event {
-        case started(String)
+        case started(String, GoogleAccount?)
         case finished(String)
         case failed(Error)
     }
@@ -45,7 +45,7 @@ final class FileRouter {
     }
 
     private func openShortcut(at url: URL) async {
-        eventPublisher.send(.started("Opening Google Doc link"))
+        eventPublisher.send(.started("Opening Google Doc link", nil))
         do {
             let link = try FileUtilities.loadShortcut(from: url)
             _ = await MainActor.run {
@@ -58,9 +58,9 @@ final class FileRouter {
     }
 
     private func uploadAndReplace(url: URL, targetType: DriveUploader.ConversionTarget) async {
-        eventPublisher.send(.started("Uploading \(url.lastPathComponent)"))
         do {
             let account = try await accountSelector.selectAccount(for: url)
+            eventPublisher.send(.started("Uploading \(url.lastPathComponent)", account))
             let uploadResult = try await driveUploader.uploadAndConvert(fileURL: url, target: targetType, accountID: account.id)
             let storedOriginal = try originalStore.persist(fileURL: url)
             let fileUTType = UTType(filenameExtension: url.pathExtension.lowercased())?.identifier

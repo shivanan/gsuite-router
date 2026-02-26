@@ -15,6 +15,7 @@ final class MainViewModel: ObservableObject {
     @Published private(set) var authState: GoogleAuthenticator.State
     @Published private(set) var accounts: [GoogleAccount]
     @Published var operationState: OperationState = .idle
+    @Published var activeAccountEmail: String?
 
     private let authenticator: GoogleAuthenticator
     private let fileRouter: FileRouter
@@ -88,12 +89,19 @@ final class MainViewModel: ObservableObject {
 
     private func handle(event: FileRouter.Event) {
         switch event {
-        case .started(let description):
+        case .started(let description, let account):
             operationState = .working(description)
+            activeAccountEmail = account?.email
         case .finished(let description):
             operationState = .completed(description)
+            activeAccountEmail = nil
         case .failed(let error):
-            operationState = .failed(error.localizedDescription)
+            if let routerError = error as? FileRouterError, routerError == .userCancelled {
+                operationState = .idle
+            } else {
+                operationState = .failed(error.localizedDescription)
+            }
+            activeAccountEmail = nil
         }
     }
 }

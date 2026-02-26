@@ -21,35 +21,26 @@ final class AccountSelector {
         if accounts.count == 1, let first = accounts.first {
             return first
         }
-        return try await AccountSelectionPrompt.prompt(accounts: accounts, fileName: fileURL.lastPathComponent)
-    }
-}
-
-private enum AccountSelectionPrompt {
-    static func prompt(accounts: [GoogleAccount], fileName: String) async throws -> GoogleAccount {
-        try await withCheckedThrowingContinuation { continuation in
-            let work: @MainActor () -> Void = {
+        return try await withCheckedThrowingContinuation { continuation in
+            let action: @MainActor () -> Void = {
                 NSApp.activate(ignoringOtherApps: true)
                 let alert = NSAlert()
-                alert.messageText = "Choose an account"
-                alert.informativeText = "Select which Google account should handle \(fileName)."
-                alert.addButton(withTitle: "Continue")
+                alert.messageText = "Pick an account"
+                alert.informativeText = "Choose which Google account should handle \(fileURL.lastPathComponent)."
+                alert.addButton(withTitle: "Use Account")
                 alert.addButton(withTitle: "Cancel")
-                let popup = NSPopUpButton(frame: NSRect(x: 0, y: 0, width: 240, height: 26), pullsDown: false)
+                let popup = NSPopUpButton(frame: NSRect(x: 0, y: 0, width: 260, height: 26), pullsDown: false)
                 popup.addItems(withTitles: accounts.map { $0.email })
                 alert.accessoryView = popup
                 let response = alert.runModal()
                 if response == .alertFirstButtonReturn {
-                    let index = popup.indexOfSelectedItem
-                    let selected = accounts[index]
-                    continuation.resume(returning: selected)
+                    let selectedIndex = popup.indexOfSelectedItem
+                    continuation.resume(returning: accounts[selectedIndex])
                 } else {
-                    continuation.resume(throwing: AccountSelector.SelectionError.userCancelled)
+                    continuation.resume(throwing: SelectionError.userCancelled)
                 }
             }
-            Task { @MainActor in
-                work()
-            }
+            Task { @MainActor in action() }
         }
     }
 }

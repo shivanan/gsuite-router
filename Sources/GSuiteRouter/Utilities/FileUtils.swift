@@ -1,7 +1,7 @@
 import Foundation
 import UniformTypeIdentifiers
 
-enum FileRouterError: Error {
+enum FileRouterError: Error, Equatable {
     case unsupportedType
     case authenticationMissing
     case uploadFailed
