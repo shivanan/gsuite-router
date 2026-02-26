@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import AppKit
+import UniformTypeIdentifiers
 
 final class FileRouter {
     enum Event {
@@ -13,6 +14,7 @@ final class FileRouter {
 
     private let driveUploader: DriveUploader
     private let authenticator: GoogleAuthenticator
+    private let originalStore = OriginalFileStore.shared
     private let workspace = NSWorkspace.shared
 
     init(driveUploader: DriveUploader, authenticator: GoogleAuthenticator) {
@@ -63,11 +65,16 @@ final class FileRouter {
                 throw FileRouterError.authenticationMissing
             }
             let uploadResult = try await driveUploader.uploadAndConvert(fileURL: url, target: targetType)
+            let storedOriginal = try originalStore.persist(fileURL: url)
+            let fileUTType = UTType(filenameExtension: url.pathExtension.lowercased())?.identifier
             let link = GDocLinkFile(
                 documentURL: uploadResult.webViewLink,
                 originalFilename: url.lastPathComponent,
                 uploadedAt: Date(),
-                uploaderVersion: "0.1.0"
+                uploaderVersion: "0.1.0",
+                originalBlobHash: storedOriginal.hash,
+                originalTypeIdentifier: fileUTType,
+                originalFileSize: storedOriginal.fileSize
             )
             _ = try FileUtilities.trashOriginalAndCreateShortcut(originalURL: url, link: link)
             eventPublisher.send(.finished("Rerouted to Google Docs"))

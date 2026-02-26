@@ -9,6 +9,7 @@ Native macOS helper that intercepts `.docx` and `.xlsx` files, uploads them to G
 - Local hygiene: moves the original file to the Trash, then creates a `*.gdoc` JSON shortcut storing the canonical web link.
 - Opening a `*.gdoc` file rehydrates the stored link and launches it in the default browser.
 - Simple SwiftUI-based status window showing auth state and last routing activity, plus a manual “Choose Files…” workflow.
+- The original Office payload is cached under `~/.gsuiterouter/originals/<hash>` so future restore tooling can rebuild the binary file without bloating the `.gdoc` marker.
 
 ## Project Layout
 

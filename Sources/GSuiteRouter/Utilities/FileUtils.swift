@@ -63,6 +63,9 @@ struct GDocLinkFile: Codable {
     let originalFilename: String
     let uploadedAt: Date
     let uploaderVersion: String
+    let originalBlobHash: String?
+    let originalTypeIdentifier: String?
+    let originalFileSize: Int?
 }
 
 struct FileUtilities {
