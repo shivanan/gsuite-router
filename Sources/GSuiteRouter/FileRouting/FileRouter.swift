@@ -13,13 +13,13 @@ final class FileRouter {
     let eventPublisher = PassthroughSubject<Event, Never>()
 
     private let driveUploader: DriveUploader
-    private let authenticator: GoogleAuthenticator
+    private let accountSelector: AccountSelector
     private let originalStore = OriginalFileStore.shared
     private let workspace = NSWorkspace.shared
 
-    init(driveUploader: DriveUploader, authenticator: GoogleAuthenticator) {
+    init(driveUploader: DriveUploader, accountSelector: AccountSelector) {
         self.driveUploader = driveUploader
-        self.authenticator = authenticator
+        self.accountSelector = accountSelector
     }
 
     func handleFileOpen(url: URL) -> Bool {
@@ -60,11 +60,8 @@ final class FileRouter {
     private func uploadAndReplace(url: URL, targetType: DriveUploader.ConversionTarget) async {
         eventPublisher.send(.started("Uploading \(url.lastPathComponent)"))
         do {
-            let state = await MainActor.run { authenticator.state }
-            guard state == .ready else {
-                throw FileRouterError.authenticationMissing
-            }
-            let uploadResult = try await driveUploader.uploadAndConvert(fileURL: url, target: targetType)
+            let account = try await accountSelector.selectAccount(for: url)
+            let uploadResult = try await driveUploader.uploadAndConvert(fileURL: url, target: targetType, accountID: account.id)
             let storedOriginal = try originalStore.persist(fileURL: url)
             let fileUTType = UTType(filenameExtension: url.pathExtension.lowercased())?.identifier
             let link = GDocLinkFile(
@@ -72,6 +69,8 @@ final class FileRouter {
                 originalFilename: url.lastPathComponent,
                 uploadedAt: Date(),
                 uploaderVersion: "0.1.0",
+                accountID: account.id,
+                accountEmail: account.email,
                 originalBlobHash: storedOriginal.hash,
                 originalTypeIdentifier: fileUTType,
                 originalFileSize: storedOriginal.fileSize
@@ -81,6 +80,10 @@ final class FileRouter {
                 workspace.open(uploadResult.webViewLink)
             }
             eventPublisher.send(.finished("Rerouted to Google Docs"))
+        } catch AccountSelector.SelectionError.noAccounts {
+            eventPublisher.send(.failed(FileRouterError.authenticationMissing))
+        } catch AccountSelector.SelectionError.userCancelled {
+            eventPublisher.send(.failed(FileRouterError.userCancelled))
         } catch {
             eventPublisher.send(.failed(error))
         }

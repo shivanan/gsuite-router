@@ -6,7 +6,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var mainWindowController: MainWindowController?
     private let authenticator = GoogleAuthenticator()
     private lazy var driveUploader = DriveUploader(authenticator: authenticator)
-    private lazy var fileRouter = FileRouter(driveUploader: driveUploader, authenticator: authenticator)
+    private lazy var accountSelector = AccountSelector(authenticator: authenticator)
+    private lazy var fileRouter = FileRouter(driveUploader: driveUploader, accountSelector: accountSelector)
     private lazy var viewModel = MainViewModel(authenticator: authenticator, fileRouter: fileRouter)
     private var cancellables: Set<AnyCancellable> = []
     private var shouldTerminateAfterProcessing: Bool = false

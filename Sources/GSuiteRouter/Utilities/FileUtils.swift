@@ -7,6 +7,7 @@ enum FileRouterError: Error {
     case uploadFailed
     case invalidResponse
     case invalidLinkFile
+    case userCancelled
 }
 
 struct SupportedFileKind {
@@ -63,6 +64,8 @@ struct GDocLinkFile: Codable {
     let originalFilename: String
     let uploadedAt: Date
     let uploaderVersion: String
+    let accountID: String?
+    let accountEmail: String?
     let originalBlobHash: String?
     let originalTypeIdentifier: String?
     let originalFileSize: Int?

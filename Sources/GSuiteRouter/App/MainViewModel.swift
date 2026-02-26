@@ -13,7 +13,7 @@ final class MainViewModel: ObservableObject {
     }
 
     @Published private(set) var authState: GoogleAuthenticator.State
-    @Published private(set) var userEmail: String?
+    @Published private(set) var accounts: [GoogleAccount]
     @Published var operationState: OperationState = .idle
 
     private let authenticator: GoogleAuthenticator
@@ -24,7 +24,7 @@ final class MainViewModel: ObservableObject {
         self.authenticator = authenticator
         self.fileRouter = fileRouter
         self.authState = authenticator.state
-        self.userEmail = authenticator.userEmail
+        self.accounts = authenticator.accounts
 
         authenticator.$state
             .receive(on: RunLoop.main)
@@ -33,10 +33,10 @@ final class MainViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        authenticator.$userEmail
+        authenticator.$accounts
             .receive(on: RunLoop.main)
-            .sink { [weak self] email in
-                self?.userEmail = email
+            .sink { [weak self] accounts in
+                self?.accounts = accounts
             }
             .store(in: &cancellables)
 
@@ -60,12 +60,15 @@ final class MainViewModel: ObservableObject {
         }
     }
 
-    func signOut() {
-        authenticator.signOut()
-        operationState = .idle
+    func signOut(accountID: String) {
+        authenticator.signOut(accountID: accountID)
     }
 
     func manualFileSelection() {
+        guard accounts.isEmpty == false else {
+            operationState = .failed("Connect a Google account first.")
+            return
+        }
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = true
         panel.allowedContentTypes = SupportedFileKind.acceptedTypes

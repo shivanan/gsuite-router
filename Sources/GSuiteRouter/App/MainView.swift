@@ -7,6 +7,8 @@ struct MainView: View {
         VStack(alignment: .leading, spacing: 16) {
             header
             Divider()
+            accountsSection
+            Divider()
             status
             Divider()
             actions
@@ -25,6 +27,41 @@ struct MainView: View {
         }
     }
 
+    private var accountsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Connected accounts")
+                    .font(.system(size: 14, weight: .semibold))
+                Spacer()
+                Text("\(viewModel.accounts.count)")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+            }
+            if viewModel.accounts.isEmpty {
+                Text("No Google accounts connected. Add at least one to start routing files.")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(viewModel.accounts) { account in
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(account.email)
+                                .font(.system(size: 13, weight: .medium))
+                            Text("ID: \(account.id)")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Button("Sign out") {
+                            viewModel.signOut(accountID: account.id)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+        }
+    }
+
     private var status: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -34,14 +71,9 @@ struct MainView: View {
                 Text(statusText)
                     .font(.system(size: 13, weight: .semibold))
             }
-            if let email = viewModel.userEmail {
-                Text("Signed in as \(email)")
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-            }
             switch viewModel.operationState {
             case .idle:
-                Text("Drop .docx or .xlsx files onto the app, or set GSuite Router as the default handler.")
+                Text(viewModel.accounts.isEmpty ? "Add a Google account to begin routing files." : "Drop .docx or .xlsx files onto the app, or set GSuite Router as the default handler.")
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
             case .working(let message):
@@ -61,21 +93,14 @@ struct MainView: View {
 
     private var actions: some View {
         HStack(spacing: 12) {
-            if viewModel.authState.requiresSignIn {
-                Button("Sign in with Google") {
-                    viewModel.signIn()
-                }
-                .buttonStyle(.borderedProminent)
-            } else {
-                Button("Sign out") {
-                    viewModel.signOut()
-                }
+            Button("Add Google Account") {
+                viewModel.signIn()
             }
-
+            .buttonStyle(.borderedProminent)
             Button("Choose Files…") {
                 viewModel.manualFileSelection()
             }
-            .disabled(viewModel.authState.requiresSignIn)
+            .disabled(viewModel.accounts.isEmpty)
             Spacer()
         }
     }
@@ -102,4 +127,3 @@ struct MainView: View {
         }
     }
 }
-

@@ -39,8 +39,8 @@ final class DriveUploader {
         self.session = session
     }
 
-    func uploadAndConvert(fileURL: URL, target: ConversionTarget) async throws -> UploadResult {
-        let accessToken = try await authenticator.validAccessToken()
+    func uploadAndConvert(fileURL: URL, target: ConversionTarget, accountID: String) async throws -> UploadResult {
+        let accessToken = try await authenticator.validAccessToken(for: accountID)
         let metadata = makeMetadata(for: fileURL, target: target)
         let fileData = try Data(contentsOf: fileURL)
         let body = try buildMultipartBody(metadata: metadata, fileData: fileData, fileMimeType: target.uploadContentType)

@@ -39,20 +39,14 @@ final class GoogleAuthenticator: NSObject, ObservableObject {
     }
 
     @Published private(set) var state: State = .signedOut
-    @Published private(set) var userEmail: String?
-
-    private var tokens: AuthTokens? {
+    @Published private(set) var accounts: [GoogleAccount] = [] {
         didSet {
-            if let tokens {
-                save(tokens: tokens)
-            } else {
-                keychain.remove(tokenKey)
-            }
+            state = accounts.isEmpty ? .signedOut : .ready
         }
     }
 
     private let keychain = KeychainStore(service: "com.shivanan.gsuite-router")
-    private let tokenKey = "google-oauth-tokens"
+    private let accountsKey = "google-accounts"
     private let config = AppConfig.shared
 
     override init() {
@@ -61,16 +55,13 @@ final class GoogleAuthenticator: NSObject, ObservableObject {
     }
 
     func restore() {
-        guard let data = keychain.data(for: tokenKey) else { return }
+        guard let data = keychain.data(for: accountsKey) else { return }
         do {
-            let stored = try JSONDecoder().decode(AuthTokens.self, from: data)
-            tokens = stored
-            state = .ready
-            Task {
-                try? await refreshUserInfo()
-            }
+            let stored = try JSONDecoder().decode([GoogleAccount].self, from: data)
+            accounts = stored
         } catch {
-            keychain.remove(tokenKey)
+            keychain.remove(accountsKey)
+            accounts = []
         }
     }
 
@@ -92,9 +83,9 @@ final class GoogleAuthenticator: NSObject, ObservableObject {
                 server.cancelWaiting()
             })
             let tokens = try await exchangeCode(from: callbackURL, redirectURI: redirectURL.absoluteString, expectedState: stateToken)
-            self.tokens = tokens
+            let userInfo = try await fetchUserInfo(accessToken: tokens.accessToken)
+            upsertAccount(id: userInfo.sub, email: userInfo.email, tokens: tokens)
             self.state = .ready
-            try await refreshUserInfo()
         } catch {
             self.state = .signedOut
             if case LoopbackRedirectServer.ServerError.cancelled = error {
@@ -104,20 +95,24 @@ final class GoogleAuthenticator: NSObject, ObservableObject {
         }
     }
 
-    func signOut() {
-        tokens = nil
-        state = .signedOut
-        userEmail = nil
+    func signOut(accountID: String) {
+        accounts.removeAll { $0.id == accountID }
+        persistAccounts()
     }
 
-    func validAccessToken() async throws -> String {
-        guard let tokens = tokens else { throw AuthError.notSignedIn }
-        if tokens.isExpired {
-            let refreshed = try await refreshToken(using: tokens)
-            self.tokens = refreshed
+    func validAccessToken(for accountID: String) async throws -> String {
+        guard let index = accounts.firstIndex(where: { $0.id == accountID }) else {
+            throw AuthError.notSignedIn
+        }
+        var account = accounts[index]
+        if account.tokens.isExpired {
+            let refreshed = try await refreshToken(using: account.tokens)
+            account.tokens = refreshed
+            accounts[index] = account
+            persistAccounts()
             return refreshed.accessToken
         }
-        return tokens.accessToken
+        return account.tokens.accessToken
     }
 
     private func buildAuthenticationURL(redirectURI: String, state: String) -> URL {
@@ -165,7 +160,7 @@ final class GoogleAuthenticator: NSObject, ObservableObject {
             throw AuthError.tokenExchangeFailed
         }
         let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
-        guard let refreshToken = tokenResponse.refreshToken ?? self.tokens?.refreshToken else {
+        guard let refreshToken = tokenResponse.refreshToken else {
             throw AuthError.tokenExchangeFailed
         }
         let expiry = Date().addingTimeInterval(TimeInterval(tokenResponse.expiresIn))
@@ -204,22 +199,32 @@ final class GoogleAuthenticator: NSObject, ObservableObject {
         )
     }
 
-    private func refreshUserInfo() async throws {
-        let token = try await validAccessToken()
+    private func fetchUserInfo(accessToken: String) async throws -> UserInfo {
         var request = URLRequest(url: URL(string: "https://www.googleapis.com/oauth2/v3/userinfo")!)
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-            return
+            throw AuthError.authorizationFailed
         }
-        if let profile = try? JSONDecoder().decode(UserInfo.self, from: data) {
-            userEmail = profile.email
-        }
+        return try JSONDecoder().decode(UserInfo.self, from: data)
     }
 
-    private func save(tokens: AuthTokens) {
-        if let data = try? JSONEncoder().encode(tokens) {
-            try? keychain.set(data, for: tokenKey)
+    private func upsertAccount(id: String, email: String, tokens: AuthTokens) {
+        if let index = accounts.firstIndex(where: { $0.id == id }) {
+            accounts[index].email = email
+            accounts[index].tokens = tokens
+        } else {
+            let account = GoogleAccount(id: id, email: email, tokens: tokens)
+            accounts.append(account)
+        }
+        persistAccounts()
+    }
+
+    private func persistAccounts() {
+        if let data = try? JSONEncoder().encode(accounts) {
+            try? keychain.set(data, for: accountsKey)
+        } else {
+            keychain.remove(accountsKey)
         }
     }
 }
@@ -246,8 +251,15 @@ private struct TokenResponse: Decodable {
     }
 }
 
+struct GoogleAccount: Identifiable, Codable {
+    let id: String
+    var email: String
+    var tokens: AuthTokens
+}
+
 private struct UserInfo: Decodable {
     let email: String
+    let sub: String
 }
 
 private extension Array where Element == URLQueryItem {
