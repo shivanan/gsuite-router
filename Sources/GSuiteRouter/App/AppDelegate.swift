@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var fileRouter = FileRouter(driveUploader: driveUploader, authenticator: authenticator)
     private lazy var viewModel = MainViewModel(authenticator: authenticator, fileRouter: fileRouter)
     private var cancellables: Set<AnyCancellable> = []
+    private var shouldTerminateAfterProcessing: Bool = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         configureMenu()
@@ -16,6 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         mainWindowController?.showWindow(self)
         NSApp.activate(ignoringOtherApps: true)
         authenticator.restore()
+        observeFileRouting()
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
@@ -28,10 +30,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func application(_ sender: NSApplication, openFile filename: String) -> Bool {
         let url = URL(fileURLWithPath: filename)
+        shouldTerminateAfterProcessing = true
         return fileRouter.handleFileOpen(url: url)
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
+        shouldTerminateAfterProcessing = true
         urls.forEach { _ = fileRouter.handleFileOpen(url: $0) }
     }
 
@@ -54,5 +58,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         windowItem.submenu = windowMenu
 
         NSApplication.shared.mainMenu = mainMenu
+    }
+
+    private func observeFileRouting() {
+        fileRouter.eventPublisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] event in
+                self?.handleFileRouter(event)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func handleFileRouter(_ event: FileRouter.Event) {
+        guard shouldTerminateAfterProcessing else { return }
+        switch event {
+        case .finished:
+            shouldTerminateAfterProcessing = false
+            NSApp.terminate(self)
+        case .failed:
+            shouldTerminateAfterProcessing = false
+        case .started:
+            break
+        }
     }
 }

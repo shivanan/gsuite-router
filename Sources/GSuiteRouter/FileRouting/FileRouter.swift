@@ -77,6 +77,9 @@ final class FileRouter {
                 originalFileSize: storedOriginal.fileSize
             )
             _ = try FileUtilities.trashOriginalAndCreateShortcut(originalURL: url, link: link)
+            _ = await MainActor.run {
+                workspace.open(uploadResult.webViewLink)
+            }
             eventPublisher.send(.finished("Rerouted to Google Docs"))
         } catch {
             eventPublisher.send(.failed(error))
