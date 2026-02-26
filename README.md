@@ -11,6 +11,8 @@ Native macOS helper that intercepts `.docx` and `.xlsx` files, uploads them to G
 - Simple SwiftUI-based status window showing auth state and last routing activity, plus a manual “Choose Files…” workflow.
 - Connect multiple Google accounts, pick which one to use per upload, and sign out of each individually.
 - The original Office payload is cached under `~/.gsuiterouter/originals/<hash>` so future restore tooling can rebuild the binary file without bloating the `.gdoc` marker.
+- Shortcut files inherit the original document’s creation/modification timestamps and other common file attributes so Finder sorting stays intact.
+- Built-in menu item installs a Finder Quick Action (“Restore Original”) that invokes the CLI restore helper without extra setup.
 
 ## Project Layout
 
@@ -50,6 +52,14 @@ swift run
 ```
 
 This launches the Cocoa app directly (SwiftPM spawns an `.app` bundle automatically when you run the executable). Once authenticated, double-clicking a `.docx`/`.xlsx` file and choosing GSuite Router as the handler will trigger the routing flow.
+
+### CLI restore helper
+
+```
+swift run -- --restore /path/to/file.gdoc
+```
+
+The `--restore` flag reconstructs the original Office document beside the `.gdoc` shortcut (using the cached copy in `~/.gsuiterouter/originals`). You can pass multiple `.gdoc` paths, making it easy to wire into Automator or Shortcuts.
 
 ### Create a distributable `.app`
 

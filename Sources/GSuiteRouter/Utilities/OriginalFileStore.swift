@@ -33,6 +33,19 @@ struct OriginalFileStore: @unchecked Sendable {
         directory.appendingPathComponent(hash, isDirectory: false)
     }
 
+    func exists(hash: String) -> Bool {
+        fileManager.fileExists(atPath: url(for: hash).path)
+    }
+
+    func copyOriginal(hash: String, to destinationURL: URL) throws {
+        let source = url(for: hash)
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw ShortcutLinkError.originalNotFound
+        }
+        try ensureDirectory()
+        try fileManager.copyItem(at: source, to: destinationURL)
+    }
+
     private func ensureDirectory() throws {
         if fileManager.fileExists(atPath: directory.path) == false {
             try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)

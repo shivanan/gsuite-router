@@ -57,6 +57,9 @@ struct FileReplacementResult {
 enum ShortcutLinkError: Error {
     case encodingFailed
     case decodingFailed
+    case missingOriginalReference
+    case originalNotFound
+    case destinationExists
 }
 
 struct GDocLinkFile: Codable {
@@ -74,6 +77,7 @@ struct GDocLinkFile: Codable {
 struct FileUtilities {
     static func trashOriginalAndCreateShortcut(originalURL: URL, link: GDocLinkFile) throws -> FileReplacementResult {
         let fileManager = FileManager.default
+        let originalAttributes = try? fileManager.attributesOfItem(atPath: originalURL.path)
         var resultingURL: NSURL?
         try fileManager.trashItem(at: originalURL, resultingItemURL: &resultingURL)
 
@@ -85,6 +89,7 @@ struct FileUtilities {
             try fileManager.removeItem(at: shortcutURL)
         }
         fileManager.createFile(atPath: shortcutURL.path, contents: data)
+        copyAttributes(originalAttributes, to: shortcutURL)
         return FileReplacementResult(
             trashedURL: resultingURL?.absoluteURL ?? originalURL,
             shortcutURL: shortcutURL
@@ -95,5 +100,46 @@ struct FileUtilities {
         let data = try Data(contentsOf: url)
         let decoder = JSONDecoder()
         return try decoder.decode(GDocLinkFile.self, from: data)
+    }
+
+    static func restoreOriginal(from shortcutURL: URL) throws -> URL {
+        let link = try loadShortcut(from: shortcutURL)
+        guard let hash = link.originalBlobHash else {
+            throw ShortcutLinkError.missingOriginalReference
+        }
+        let destinationURL = shortcutURL.deletingPathExtension()
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: destinationURL.path) == false else {
+            throw ShortcutLinkError.destinationExists
+        }
+        try OriginalFileStore.shared.copyOriginal(hash: hash, to: destinationURL)
+        let shortcutAttributes = try? fileManager.attributesOfItem(atPath: shortcutURL.path)
+        copyAttributes(shortcutAttributes, to: destinationURL)
+        return destinationURL
+    }
+
+    private static func copyAttributes(_ attributes: [FileAttributeKey: Any]?, to url: URL) {
+        guard let attributes else { return }
+        var transferable: [FileAttributeKey: Any] = [:]
+        let allowedKeys: [FileAttributeKey] = [
+            .creationDate,
+            .modificationDate,
+            .posixPermissions,
+            .ownerAccountID,
+            .ownerAccountName,
+            .groupOwnerAccountID,
+            .groupOwnerAccountName,
+            .extensionHidden
+        ]
+        for key in allowedKeys {
+            if let value = attributes[key] {
+                transferable[key] = value
+            }
+        }
+        do {
+            try FileManager.default.setAttributes(transferable, ofItemAtPath: url.path)
+        } catch {
+            // Non-fatal: fall back to defaults if we can't set metadata.
+        }
     }
 }

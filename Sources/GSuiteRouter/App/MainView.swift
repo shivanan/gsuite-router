@@ -1,7 +1,11 @@
 import SwiftUI
+import Foundation
+import UniformTypeIdentifiers
 
 struct MainView: View {
     @ObservedObject var viewModel: MainViewModel
+
+    @State private var dropActive = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -12,6 +16,14 @@ struct MainView: View {
         }
         .padding(24)
         .frame(minWidth: 480, minHeight: 360)
+        .onDrop(of: [UTType.fileURL], isTargeted: $dropActive) { providers in
+            handleDrop(providers: providers)
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(dropActive ? Color.accentColor : Color.clear, lineWidth: 3)
+                .animation(.easeInOut(duration: 0.2), value: dropActive)
+        )
     }
 
     private var header: some View {
@@ -93,5 +105,32 @@ struct MainView: View {
             .disabled(viewModel.accounts.isEmpty)
             Spacer()
         }
+    }
+}
+
+private extension MainView {
+    func handleDrop(providers: [NSItemProvider]) -> Bool {
+        var handled = false
+        for provider in providers where provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
+            handled = true
+            provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, _ in
+                guard let url = Self.resolveURL(from: item) else { return }
+                Task { @MainActor in
+                    viewModel.openFiles(at: [url])
+                }
+            }
+        }
+        return handled
+    }
+
+    nonisolated static func resolveURL(from item: NSSecureCoding?) -> URL? {
+        if let data = item as? Data,
+           let path = String(data: data, encoding: .utf8) {
+            return URL(string: path)
+        }
+        if let url = item as? URL {
+            return url
+        }
+        return nil
     }
 }

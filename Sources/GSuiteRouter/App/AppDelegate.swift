@@ -1,5 +1,6 @@
 import AppKit
 import Combine
+import Carbon
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -12,6 +13,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var cancellables: Set<AnyCancellable> = []
     private var shouldTerminateAfterProcessing: Bool = false
 
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        NSAppleEventManager.shared().setEventHandler(
+            self,
+            andSelector: #selector(handleAppleEventOpenDocuments(event:withReply:)),
+            forEventClass: AEEventClass(kCoreEventClass),
+            andEventID: AEEventID(kAEOpenDocuments)
+        )
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         configureMenu()
         mainWindowController = MainWindowController(viewModel: viewModel)
@@ -19,6 +29,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
         authenticator.restore()
         observeFileRouting()
+    }
+
+    @objc private func handleAppleEventOpenDocuments(event: NSAppleEventDescriptor, withReply replyEvent: NSAppleEventDescriptor?) {
+        guard let list = event.paramDescriptor(forKeyword: keyDirectObject) else { return }
+        var urls: [URL] = []
+        for index in 1...list.numberOfItems {
+            if let path = list.atIndex(index)?.stringValue {
+                urls.append(URL(fileURLWithPath: path))
+            }
+        }
+        guard urls.isEmpty == false else { return }
+        shouldTerminateAfterProcessing = true
+        urls.forEach { _ = fileRouter.handleFileOpen(url: $0) }
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
@@ -47,6 +70,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         mainMenu.addItem(appItem)
         let appMenu = NSMenu()
         appMenu.addItem(withTitle: "About GSuite Router", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        appMenu.addItem(NSMenuItem.separator())
+        appMenu.addItem(withTitle: "Install Restore Shortcut", action: #selector(installShortcut), keyEquivalent: "")
         appMenu.addItem(NSMenuItem.separator())
         appMenu.addItem(withTitle: "Quit GSuite Router", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
@@ -81,5 +106,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         case .started:
             break
         }
+    }
+
+    @objc private func installShortcut() {
+        do {
+            let destination = try WorkflowInstaller.installRestoreWorkflow()
+            showAlert(title: "Shortcut Installed", message: "Added RestoreOriginal.workflow to \(destination.path). Enable it in System Settings → Privacy & Security → Extensions → Finder.")
+        } catch {
+            showAlert(title: "Installation Failed", message: error.localizedDescription)
+        }
+    }
+
+    private func showAlert(title: String, message: String) {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
     }
 }

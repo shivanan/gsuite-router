@@ -79,10 +79,18 @@ final class MainViewModel: ObservableObject {
         panel.begin { [weak self] result in
             guard result == .OK else { return }
             let urls = panel.urls
-            Task {
-                for url in urls {
-                    _ = self?.fileRouter.handleFileOpen(url: url)
-                }
+            self?.openFiles(at: urls)
+        }
+    }
+
+    func openFiles(at urls: [URL]) {
+        guard accounts.isEmpty == false else {
+            operationState = .failed("Connect a Google account first.")
+            return
+        }
+        Task {
+            for url in urls {
+                _ = fileRouter.handleFileOpen(url: url)
             }
         }
     }
