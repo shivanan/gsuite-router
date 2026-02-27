@@ -36,7 +36,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         var urls: [URL] = []
         for index in 1...list.numberOfItems {
             if let path = list.atIndex(index)?.stringValue {
-                urls.append(URL(fileURLWithPath: path))
+                urls.append(urlFromDockPath(path))
             }
         }
         guard urls.isEmpty == false else { return }
@@ -53,7 +53,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func application(_ sender: NSApplication, openFile filename: String) -> Bool {
-        let url = URL(fileURLWithPath: filename)
+        let url = urlFromDockPath(filename)
         shouldTerminateAfterProcessing = true
         return fileRouter.handleFileOpen(url: url)
     }
@@ -114,6 +114,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func urlFromDockPath(_ path: String) -> URL {
+        if let candidate = URL(string: path), candidate.scheme?.lowercased() == "file" {
+            return candidate.standardizedFileURL
+        }
         let decoded = path.removingPercentEncoding ?? path
         return URL(fileURLWithPath: decoded)
     }
