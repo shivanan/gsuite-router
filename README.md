@@ -14,6 +14,7 @@ Native macOS helper that intercepts `.docx` and `.xlsx` files, uploads them to G
 
 ```
 ├── AppBundle/Info.plist         # Bundle metadata & document/URL type declarations
+├── AppBundle/Secrets.plist.template  # Template for baking OAuth keys into the app
 ├── scripts/package.sh           # Helper to build + wrap the .app bundle
 ├── Sources/GSuiteRouter
 │   ├── App                      # App delegate + SwiftUI UI layer
@@ -27,16 +28,9 @@ Native macOS helper that intercepts `.docx` and `.xlsx` files, uploads them to G
 ## Prerequisites
 
 1. Create an OAuth Client ID in Google Cloud Console (Desktop app type).
-2. Copy `.env.example` to `.env` (or export the vars in your shell) and fill in:
+2. Populate `AppBundle/Secrets.plist` with your OAuth credentials. The file is git-ignored; start from `AppBundle/Secrets.plist.template` or let the packaging script generate it for you (see below). When running a dev build via `swift run`, you can still fall back to environment variables (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, optional `GOOGLE_DRIVE_FOLDER_ID`) if the secrets file is missing.
 
-```
-GOOGLE_CLIENT_ID=XXX.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=secret-from-console
-# Optional: limit uploads to a Drive folder
-GOOGLE_DRIVE_FOLDER_ID=drive-folder-id
-```
-
-The app automatically launches your default browser for OAuth and listens on `http://127.0.0.1:<random-port>/oauth2redirect`, so no custom redirect registration is needed. Make sure the environment variables are present whenever you run or package the app (e.g. `env $(cat .env | xargs) swift run`).
+The app automatically launches your default browser for OAuth and listens on `http://127.0.0.1:<random-port>/oauth2redirect`, so no custom redirect registration is needed.
 
 ## Building & Running
 
@@ -52,11 +46,13 @@ This launches the Cocoa app directly (SwiftPM spawns an `.app` bundle automatica
 ### Create a distributable `.app`
 
 ```
+GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com \
+GOOGLE_CLIENT_SECRET=secret \
 CONFIGURATION=release ./scripts/package.sh
 open dist/GSuiteRouter.app
 ```
 
-The script wraps the compiled binary inside `dist/GSuiteRouter.app`, injects `AppBundle/Info.plist`, and performs an ad-hoc codesign. You can then drag the app into `/Applications` and set it as the default handler for `.docx`/`.xlsx` via Finder’s “Get Info” panel.
+`package.sh` now requires the OAuth secrets (either pre-populated `AppBundle/Secrets.plist` or exported env vars). It emits a Secrets.plist, copies it into `Contents/Resources`, wraps the compiled binary inside `dist/GSuiteRouter.app`, and performs an ad-hoc codesign. You can then drag the app into `/Applications` and set it as the default handler for `.docx`/`.xlsx`.
 
 ## OAuth Scopes Used
 
@@ -65,7 +61,7 @@ The script wraps the compiled binary inside `dist/GSuiteRouter.app`, injects `Ap
 
 ## Notes & Next Steps
 
-- The current build assumes manual command-line configuration. Consider moving secrets into the macOS Keychain or a compiled config plist for production.
+- Secrets are baked into `Secrets.plist` during packaging. If you need additional protection, consider deploying them from MDM or a secure endpoint at first launch instead.
 - Drive uploads convert to Google-native formats (`application/vnd.google-apps.document|spreadsheet`). If you need to keep the binary copy, extend `DriveUploader` to toggle conversion or maintain two versions.
 - Extended attributes stay with files on APFS/HFS+ but may be stripped by some syncing tools; consider adding a fallback shortcut export for those cases.
 - Add an app icon (`Assets.car`) and embed it under `AppBundle/` for a polished build.
