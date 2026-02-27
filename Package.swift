@@ -10,10 +10,7 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-            name: "GSuiteRouter",
-            resources: [
-                .process("Resources")
-            ]
+            name: "GSuiteRouter"
         ),
     ]
 )

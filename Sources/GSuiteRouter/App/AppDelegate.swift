@@ -78,8 +78,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let appMenu = NSMenu()
         appMenu.addItem(withTitle: "About GSuite Router", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         appMenu.addItem(NSMenuItem.separator())
-        appMenu.addItem(withTitle: "Install Restore Shortcut", action: #selector(installShortcut), keyEquivalent: "")
-        appMenu.addItem(NSMenuItem.separator())
         appMenu.addItem(withTitle: "Quit GSuite Router", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
 
@@ -115,28 +113,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    @objc private func installShortcut() {
-        do {
-            let destination = try WorkflowInstaller.installRestoreWorkflow()
-            showAlert(title: "Shortcut Installed", message: "Added RestoreOriginal.workflow to \(destination.path). Enable it in System Settings → Privacy & Security → Extensions → Finder.")
-        } catch {
-            showAlert(title: "Installation Failed", message: error.localizedDescription)
-        }
-    }
-
-    private func showAlert(title: String, message: String) {
-        let alert = NSAlert()
-        alert.messageText = title
-        alert.informativeText = message
-        alert.addButton(withTitle: "OK")
-        alert.runModal()
-    }
-
     private func urlFromDockPath(_ path: String) -> URL {
         let decoded = path.removingPercentEncoding ?? path
-        print("HERE WE GO \(path) : \(decoded)")
-        showAlert(title: "Received Path", message: "Original: \(path)\nDecoded: \(decoded)")
-        
         return URL(fileURLWithPath: decoded)
     }
 }

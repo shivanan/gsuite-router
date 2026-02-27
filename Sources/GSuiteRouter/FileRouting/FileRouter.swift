@@ -14,7 +14,6 @@ final class FileRouter {
 
     private let driveUploader: DriveUploader
     private let accountSelector: AccountSelector
-    private let originalStore = OriginalFileStore.shared
     private let workspace = NSWorkspace.shared
 
     init(driveUploader: DriveUploader, accountSelector: AccountSelector) {
@@ -34,52 +33,43 @@ final class FileRouter {
     }
 
     private func process(_ classification: SupportedFileKind) async {
+        if let metadata = DocumentMetadataStore.load(from: classification.originalURL) {
+            await openRemoteDocument(using: metadata)
+            return
+        }
         switch classification.kind {
-        case .shortcut:
-            await openShortcut(at: classification.originalURL)
         case .excel:
-            await uploadAndReplace(url: classification.originalURL, targetType: .spreadsheet)
+            await uploadAndAnnotate(url: classification.originalURL, targetType: .spreadsheet)
         case .word:
-            await uploadAndReplace(url: classification.originalURL, targetType: .document)
+            await uploadAndAnnotate(url: classification.originalURL, targetType: .document)
         }
     }
 
-    private func openShortcut(at url: URL) async {
-        eventPublisher.send(.started("Opening Google Doc link", nil))
-        do {
-            let link = try FileUtilities.loadShortcut(from: url)
-            _ = await MainActor.run {
-                workspace.open(link.documentURL)
-            }
-            eventPublisher.send(.finished("Opened \(link.documentURL.absoluteString)"))
-        } catch {
-            eventPublisher.send(.failed(error))
+    private func openRemoteDocument(using metadata: DocumentMetadata) async {
+        eventPublisher.send(.started("Opening \(metadata.documentURL.lastPathComponent)", nil))
+        _ = await MainActor.run {
+            workspace.open(metadata.documentURL)
         }
+        eventPublisher.send(.finished("Opened \(metadata.documentURL.absoluteString)"))
     }
 
-    private func uploadAndReplace(url: URL, targetType: DriveUploader.ConversionTarget) async {
+    private func uploadAndAnnotate(url: URL, targetType: DriveUploader.ConversionTarget) async {
         do {
             let account = try await accountSelector.selectAccount(for: url)
             eventPublisher.send(.started("Uploading \(url.lastPathComponent)", account))
             let uploadResult = try await driveUploader.uploadAndConvert(fileURL: url, target: targetType, accountID: account.id)
-            let storedOriginal = try originalStore.persist(fileURL: url)
-            let fileUTType = UTType(filenameExtension: url.pathExtension.lowercased())?.identifier
-            let link = GDocLinkFile(
+            let metadata = DocumentMetadata(
                 documentURL: uploadResult.webViewLink,
-                originalFilename: url.lastPathComponent,
-                uploadedAt: Date(),
-                uploaderVersion: "0.1.0",
                 accountID: account.id,
                 accountEmail: account.email,
-                originalBlobHash: storedOriginal.hash,
-                originalTypeIdentifier: fileUTType,
-                originalFileSize: storedOriginal.fileSize
+                uploadedAt: Date(),
+                uploaderVersion: "0.2.0"
             )
-            _ = try FileUtilities.trashOriginalAndCreateShortcut(originalURL: url, link: link)
+            try DocumentMetadataStore.save(metadata, to: url)
             _ = await MainActor.run {
                 workspace.open(uploadResult.webViewLink)
             }
-            eventPublisher.send(.finished("Rerouted to Google Docs"))
+            eventPublisher.send(.finished("Uploaded to Google Docs"))
         } catch AccountSelector.SelectionError.noAccounts {
             eventPublisher.send(.failed(FileRouterError.authenticationMissing))
         } catch AccountSelector.SelectionError.userCancelled {

@@ -32,18 +32,6 @@
 				<string>com.microsoft.word.docx</string>
 			</array>
 		</dict>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>Google Doc Shortcut</string>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-			<key>LSHandlerRank</key>
-			<string>Owner</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>com.google.gsuite-router.gdoc</string>
-			</array>
-		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>GSuiteRouter</string>
@@ -56,7 +44,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>0.1.0</string>
 	<key>CFBundleVersion</key>
-	<string>20260226214355</string>
+	<string>20260227092144</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>
@@ -68,27 +56,5 @@
 	</dict>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2026 Shivanan.</string>
-	<key>UTExportedTypeDeclarations</key>
-	<array>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>GSuite Router Link</string>
-			<key>UTTypeIdentifier</key>
-			<string>com.google.gsuite-router.gdoc</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>gdoc</string>
-				</array>
-				<key>public.mime-type</key>
-				<string>application/vnd.google-apps.link</string>
-			</dict>
-		</dict>
-	</array>
 </dict>
 </plist>
