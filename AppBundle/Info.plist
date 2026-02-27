@@ -33,6 +33,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleIconFile</key>
+	<string>GSuiteRouter</string>
 	<key>CFBundleExecutable</key>
 	<string>GSuiteRouter</string>
 	<key>CFBundleIdentifier</key>

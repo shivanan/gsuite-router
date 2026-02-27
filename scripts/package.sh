@@ -22,6 +22,8 @@ mkdir -p "${APP_BUNDLE}/Contents/Resources"
 
 cp "${BINARY_SOURCE}" "${APP_BUNDLE}/Contents/MacOS/${PRODUCT_NAME}"
 cp "${INFO_PLIST_SOURCE}" "${APP_BUNDLE}/Contents/Info.plist"
+cp AppBundle/GSuiteRouter.icns "${APP_BUNDLE}/Contents/Resources/"
+
 
 # Optionally embed additional resources (icons, etc.) here.
 

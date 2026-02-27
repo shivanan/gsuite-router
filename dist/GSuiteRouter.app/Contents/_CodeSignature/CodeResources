@@ -3,9 +3,22 @@
 <plist version="1.0">
 <dict>
 	<key>files</key>
-	<dict/>
+	<dict>
+		<key>Resources/GSuiteRouter.icns</key>
+		<data>
+		OgRul8Ar6it96ugHqV1K0/7edLM=
+		</data>
+	</dict>
 	<key>files2</key>
-	<dict/>
+	<dict>
+		<key>Resources/GSuiteRouter.icns</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			He4YJujW07TIVmLSShejrNob9Hnih9bJMf/yVhTZ0nM=
+			</data>
+		</dict>
+	</dict>
 	<key>rules</key>
 	<dict>
 		<key>^Resources/</key>

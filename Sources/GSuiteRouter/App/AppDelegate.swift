@@ -29,6 +29,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
         authenticator.restore()
         observeFileRouting()
+        processLaunchArguments()
     }
 
     @objc private func handleAppleEventOpenDocuments(event: NSAppleEventDescriptor, withReply replyEvent: NSAppleEventDescriptor?) {
@@ -40,7 +41,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         guard urls.isEmpty == false else { return }
-        shouldTerminateAfterProcessing = true
         urls.forEach { _ = fileRouter.handleFileOpen(url: $0) }
     }
 
@@ -54,20 +54,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func application(_ sender: NSApplication, openFile filename: String) -> Bool {
         let url = urlFromDockPath(filename)
-        shouldTerminateAfterProcessing = true
         return fileRouter.handleFileOpen(url: url)
     }
 
     func application(_ sender: NSApplication, openFiles filenames: [String]) {
-        shouldTerminateAfterProcessing = true
         filenames.forEach { _ = fileRouter.handleFileOpen(url: urlFromDockPath($0)) }
         NSApp.reply(toOpenOrPrint: .success)
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
-        shouldTerminateAfterProcessing = true
         urls.forEach { _ = fileRouter.handleFileOpen(url: $0) }
         NSApp.reply(toOpenOrPrint: .success)
+    }
+
+    private func processLaunchArguments() {
+        let args = CommandLine.arguments.dropFirst()
+        guard args.isEmpty == false else { return }
+        shouldTerminateAfterProcessing = true
+        args.forEach { argument in
+            let url = urlFromDockPath(argument)
+            _ = fileRouter.handleFileOpen(url: url)
+        }
     }
 
     private func configureMenu() {

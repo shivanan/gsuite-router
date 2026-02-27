@@ -35,6 +35,8 @@
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>GSuiteRouter</string>
+	<key>CFBundleIconFile</key>
+	<string>GSuiteRouter</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.shivanan.gsuite-router</string>
 	<key>CFBundleName</key>
@@ -44,7 +46,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>0.1.0</string>
 	<key>CFBundleVersion</key>
-	<string>20260227095527</string>
+	<string>20260227151356</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>
