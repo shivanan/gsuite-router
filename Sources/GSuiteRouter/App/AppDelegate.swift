@@ -10,6 +10,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var accountSelector = AccountSelector(authenticator: authenticator)
     private lazy var fileRouter = FileRouter(driveUploader: driveUploader, accountSelector: accountSelector)
     private lazy var viewModel = MainViewModel(authenticator: authenticator, fileRouter: fileRouter)
+    private let defaultAppAssociationManager = DefaultAppAssociationManager()
+    private lazy var preferencesWindowController = PreferencesWindowController(
+        viewModel: PreferencesViewModel(associationManager: defaultAppAssociationManager),
+        setDefaultAction: { [weak self] in
+            self?.presentDefaultHandlerPrompt(force: true)
+        }
+    )
+    private var defaultHandlerPromptController: DefaultHandlerPromptWindowController?
+    private var hasPromptedForDefaultsThisLaunch = false
     private var cancellables: Set<AnyCancellable> = []
     private var shouldTerminateAfterProcessing: Bool = false
 
@@ -30,6 +39,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         authenticator.restore()
         observeFileRouting()
         processLaunchArguments()
+        maybePromptForDefaultHandlers()
     }
 
     @objc private func handleAppleEventOpenDocuments(event: NSAppleEventDescriptor, withReply replyEvent: NSAppleEventDescriptor?) {
@@ -77,6 +87,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    private func maybePromptForDefaultHandlers() {
+        guard CommandLine.arguments.count == 1 else { return }
+        presentDefaultHandlerPrompt(force: false)
+    }
+
+    private func presentDefaultHandlerPrompt(force: Bool) {
+        if !force {
+            guard hasPromptedForDefaultsThisLaunch == false else { return }
+            guard defaultAppAssociationManager.allKindsDefault() == false else { return }
+        }
+        defaultHandlerPromptController?.close()
+        let controller = DefaultHandlerPromptWindowController(associationManager: defaultAppAssociationManager)
+        controller.onCompletion = { [weak self] in
+            self?.preferencesWindowController.refreshStatus()
+        }
+        controller.onDismiss = { [weak self] in
+            self?.defaultHandlerPromptController = nil
+        }
+        controller.refreshState()
+        controller.showWindow(self)
+        defaultHandlerPromptController = controller
+        hasPromptedForDefaultsThisLaunch = true
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    @objc private func openPreferences() {
+        preferencesWindowController.showWindow(self)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
     private func configureMenu() {
         let mainMenu = NSMenu()
 
@@ -84,6 +124,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         mainMenu.addItem(appItem)
         let appMenu = NSMenu()
         appMenu.addItem(withTitle: "About GSuite Router", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        appMenu.addItem(withTitle: "Preferences…", action: #selector(openPreferences), keyEquivalent: ",")
         appMenu.addItem(NSMenuItem.separator())
         appMenu.addItem(withTitle: "Quit GSuite Router", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
