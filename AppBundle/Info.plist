@@ -38,7 +38,7 @@
 	<key>CFBundleExecutable</key>
 	<string>GSuiteRouter</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.shivanan.gsuite-router</string>
+	<string>org.statictype.gsuite-router</string>
 	<key>CFBundleName</key>
 	<string>GSuiteRouter</string>
 	<key>CFBundlePackageType</key>
@@ -57,6 +57,6 @@
 		<true/>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2026 Shivanan.</string>
+	<string>© 2026 statictype.org.</string>
 </dict>
 </plist>

@@ -45,7 +45,7 @@ final class GoogleAuthenticator: NSObject, ObservableObject {
         }
     }
 
-    private let keychain = KeychainStore(service: "com.shivanan.gsuite-router")
+    private let keychain = KeychainStore(service: "org.statictype.gsuite-router")
     private let accountsKey = "google-accounts"
     private let config = AppConfig.shared
 
