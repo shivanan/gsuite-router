@@ -21,6 +21,7 @@ final class DefaultHandlerPromptWindowController: NSWindowController {
         panel.title = "Choose Default File Types"
         panel.standardWindowButton(.zoomButton)?.isHidden = true
         panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
+        panel.center()
         super.init(window: panel)
         setupUI()
         refreshState()
@@ -45,6 +46,7 @@ final class DefaultHandlerPromptWindowController: NSWindowController {
     }
 
     override func close() {
+        window?.orderOut(nil)
         super.close()
         onDismiss?()
     }

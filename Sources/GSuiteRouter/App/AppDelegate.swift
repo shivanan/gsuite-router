@@ -117,17 +117,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
 
+    @objc private func addAccountFromMenu() {
+        viewModel.signIn()
+    }
+
+    @objc private func openFilesFromMenu() {
+        viewModel.manualFileSelection()
+    }
+
     private func configureMenu() {
         let mainMenu = NSMenu()
 
         let appItem = NSMenuItem()
         mainMenu.addItem(appItem)
         let appMenu = NSMenu()
-        appMenu.addItem(withTitle: "About Glint", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        appMenu.addItem(withTitle: "About GSuite Router", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         appMenu.addItem(withTitle: "Preferences…", action: #selector(openPreferences), keyEquivalent: ",")
         appMenu.addItem(NSMenuItem.separator())
-        appMenu.addItem(withTitle: "Quit Glint", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "Quit GSuite Router", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
+
+        let fileItem = NSMenuItem()
+        mainMenu.addItem(fileItem)
+        let fileMenu = NSMenu(title: "File")
+        fileMenu.addItem(withTitle: "Add Account", action: #selector(addAccountFromMenu), keyEquivalent: "n")
+        fileMenu.addItem(withTitle: "Choose Files…", action: #selector(openFilesFromMenu), keyEquivalent: "o")
+        fileItem.submenu = fileMenu
 
         let windowItem = NSMenuItem()
         mainMenu.addItem(windowItem)
@@ -167,5 +182,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         let decoded = path.removingPercentEncoding ?? path
         return URL(fileURLWithPath: decoded)
+    }
+}
+
+extension AppDelegate: NSMenuItemValidation {
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        switch menuItem.action {
+        case #selector(openFilesFromMenu):
+            return viewModel.accounts.isEmpty == false
+        default:
+            return true
+        }
     }
 }

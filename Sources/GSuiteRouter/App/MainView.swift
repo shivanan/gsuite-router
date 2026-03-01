@@ -55,19 +55,24 @@ struct MainView: View {
                             Text(folderDescription(for: account))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            HStack {
+                            HStack(spacing: 12) {
                                 Button("Set Folder…") {
                                     viewModel.configureFolder(accountID: account.id)
                                 }
+                                .buttonStyle(.bordered)
                                 Button("Sign Out") {
                                     viewModel.signOut(accountID: account.id)
                                 }
+                                .buttonStyle(.borderedProminent)
+                                .tint(.red)
                             }
                         }
-                        .padding(10)
+                        .padding(12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 6))
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }

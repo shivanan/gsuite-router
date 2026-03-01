@@ -16,7 +16,13 @@ final class PreferencesWindowController: NSWindowController {
         window.isReleasedWhenClosed = false
         window.title = "Preferences"
         window.contentView = hostingView
+        window.center()
         super.init(window: window)
+    }
+
+    override func showWindow(_ sender: Any?) {
+        window?.center()
+        super.showWindow(sender)
     }
 
     func refreshStatus() {
