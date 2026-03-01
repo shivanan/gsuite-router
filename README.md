@@ -9,6 +9,7 @@ Native macOS helper that intercepts `.docx` and `.xlsx` files, uploads them to G
 - No stub files: routed documents keep their original filename, timestamp, and location. The app stores a JSON blob in an extended attribute so future opens jump straight to Google Docs without another upload.
 - Drag-and-drop support for both the app window and the Dock icon, plus Finder double-click handling.
 - Multi-account aware UI so you can connect several Google accounts, pick one per upload, and sign out individually.
+- Optional per-account Drive folders, so each account can route uploads into its own named directory.
 
 ## Project Layout
 

@@ -46,20 +46,25 @@ struct MainView: View {
             } else {
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(viewModel.accounts) { account in
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text(account.email)
-                                    .font(.body)
-                                Text("ID: \(account.id)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            Button("Sign Out") {
-                                viewModel.signOut(accountID: account.id)
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(account.email)
+                                .font(.body)
+                            Text("ID: \(account.id)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text(folderDescription(for: account))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            HStack {
+                                Button("Set Folder…") {
+                                    viewModel.configureFolder(accountID: account.id)
+                                }
+                                Button("Sign Out") {
+                                    viewModel.signOut(accountID: account.id)
+                                }
                             }
                         }
-                        .padding(8)
+                        .padding(10)
                         .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 6))
                     }
                 }
@@ -109,6 +114,13 @@ struct MainView: View {
 }
 
 private extension MainView {
+    func folderDescription(for account: GoogleAccount) -> String {
+        if let folder = account.preferredFolderName {
+            return "Uploads go to \"\(folder)\" in Google Drive."
+        }
+        return "Uploads go to My Drive (or the global default folder)."
+    }
+
     func handleDrop(providers: [NSItemProvider]) -> Bool {
         var handled = false
         for provider in providers where provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {

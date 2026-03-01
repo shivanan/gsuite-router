@@ -214,9 +214,27 @@ final class GoogleAuthenticator: NSObject, ObservableObject {
             accounts[index].email = email
             accounts[index].tokens = tokens
         } else {
-            let account = GoogleAccount(id: id, email: email, tokens: tokens)
+            let account = GoogleAccount(id: id, email: email, tokens: tokens, preferredFolderName: nil, preferredFolderID: nil)
             accounts.append(account)
         }
+        persistAccounts()
+    }
+
+    func account(withID id: String) -> GoogleAccount? {
+        accounts.first { $0.id == id }
+    }
+
+    func updatePreferredFolder(accountID: String, folderName: String?) {
+        guard let index = accounts.firstIndex(where: { $0.id == accountID }) else { return }
+        let trimmed = folderName?.trimmingCharacters(in: .whitespacesAndNewlines)
+        accounts[index].preferredFolderName = trimmed?.isEmpty == false ? trimmed : nil
+        accounts[index].preferredFolderID = nil
+        persistAccounts()
+    }
+
+    func cachePreferredFolderID(_ folderID: String, for accountID: String) {
+        guard let index = accounts.firstIndex(where: { $0.id == accountID }) else { return }
+        accounts[index].preferredFolderID = folderID
         persistAccounts()
     }
 
@@ -255,6 +273,8 @@ struct GoogleAccount: Identifiable, Codable {
     let id: String
     var email: String
     var tokens: AuthTokens
+    var preferredFolderName: String?
+    var preferredFolderID: String?
 }
 
 private struct UserInfo: Decodable {

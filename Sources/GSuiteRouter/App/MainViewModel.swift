@@ -65,6 +65,23 @@ final class MainViewModel: ObservableObject {
         authenticator.signOut(accountID: accountID)
     }
 
+    func configureFolder(accountID: String) {
+        guard let account = authenticator.accounts.first(where: { $0.id == accountID }) else { return }
+        let alert = NSAlert()
+        alert.messageText = "Preferred Drive Folder"
+        alert.informativeText = "Enter a folder name to store uploads for \(account.email). Leave blank to use the default Drive location."
+        alert.addButton(withTitle: "Save")
+        alert.addButton(withTitle: "Cancel")
+        let textField = NSTextField(string: account.preferredFolderName ?? "")
+        textField.placeholderString = "Folder name (optional)"
+        textField.frame = NSRect(x: 0, y: 0, width: 260, height: 24)
+        alert.accessoryView = textField
+        let response = alert.runModal()
+        guard response == .alertFirstButtonReturn else { return }
+        let trimmed = textField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        authenticator.updatePreferredFolder(accountID: accountID, folderName: trimmed.isEmpty ? nil : trimmed)
+    }
+
     func manualFileSelection() {
         guard accounts.isEmpty == false else {
             operationState = .failed("Connect a Google account first.")

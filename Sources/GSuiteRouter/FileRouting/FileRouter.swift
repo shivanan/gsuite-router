@@ -57,7 +57,7 @@ final class FileRouter {
         do {
             let account = try await accountSelector.selectAccount(for: url)
             eventPublisher.send(.started("Uploading \(url.lastPathComponent)", account))
-            let uploadResult = try await driveUploader.uploadAndConvert(fileURL: url, target: targetType, accountID: account.id)
+            let uploadResult = try await driveUploader.uploadAndConvert(fileURL: url, target: targetType, account: account)
             let metadata = DocumentMetadata(
                 documentURL: uploadResult.webViewLink,
                 accountID: account.id,
