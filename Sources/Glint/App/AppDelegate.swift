@@ -43,12 +43,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         UserDefaults.standard.register(defaults: [
             UserPreferenceKeys.autoSetDefaultHandlerPerFile: false,
-            UserPreferenceKeys.applyCustomIconPerFile: false
+            UserPreferenceKeys.applyCustomIconPerFile: false,
+            UserPreferenceKeys.hasAcknowledgedKeychainPrompt: false
         ])
         configureMenu()
         mainWindowController = MainWindowController(viewModel: viewModel)
         mainWindowController?.showWindow(self)
         NSApp.activate(ignoringOtherApps: true)
+        KeychainPromptCoordinator.shared.presentIfNeeded()
         authenticator.restore()
         observeFileRouting()
         processLaunchArguments()

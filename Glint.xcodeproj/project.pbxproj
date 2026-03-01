@@ -27,6 +27,7 @@
 		1D8F5B112B9C4DFA00A1B2C3 /* DocumentMetadataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5AEC2B9C4DFA00A1B2C3 /* DocumentMetadataStore.swift */; };
 		1D8F5B122B9C4DFA00A1B2C3 /* UserPreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5AED2B9C4DFA00A1B2C3 /* UserPreferenceKeys.swift */; };
 		1D8F5B132B9C4DFA00A1B2C3 /* PerFileAssociationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5AEE2B9C4DFA00A1B2C3 /* PerFileAssociationManager.swift */; };
+		1D8F5B9B2B9CA8E600A1B2C3 /* KeychainPromptCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5B9A2B9CA8E600A1B2C3 /* KeychainPromptCoordinator.swift */; };
 		2A967F3E2F54A8F50007921A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A967F3D2F54A8F50007921A /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -53,6 +54,7 @@
 		1D8F5AF22B9C4DFA00A1B2C3 /* LoopbackRedirectServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopbackRedirectServer.swift; sourceTree = "<group>"; };
 		1D8F5AF32B9C4DFA00A1B2C3 /* FileRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileRouter.swift; sourceTree = "<group>"; };
 		1D8F5AF42B9C4DFA00A1B2C3 /* AccountSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelector.swift; sourceTree = "<group>"; };
+		1D8F5B9A2B9CA8E600A1B2C3 /* KeychainPromptCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPromptCoordinator.swift; sourceTree = "<group>"; };
 		2A967F3C2F54A7F40007921A /* Glint.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Glint.entitlements; path = Glint/Glint.entitlements; sourceTree = "<group>"; };
 		2A967F3D2F54A8F50007921A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -147,6 +149,7 @@
 				1D8F5AEC2B9C4DFA00A1B2C3 /* DocumentMetadataStore.swift */,
 				1D8F5AED2B9C4DFA00A1B2C3 /* UserPreferenceKeys.swift */,
 				1D8F5AEE2B9C4DFA00A1B2C3 /* PerFileAssociationManager.swift */,
+				1D8F5B9A2B9CA8E600A1B2C3 /* KeychainPromptCoordinator.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -239,6 +242,7 @@
 				1D8F5B112B9C4DFA00A1B2C3 /* DocumentMetadataStore.swift in Sources */,
 				1D8F5B012B9C4DFA00A1B2C3 /* MainView.swift in Sources */,
 				1D8F5B102B9C4DFA00A1B2C3 /* KeychainStore.swift in Sources */,
+				1D8F5B9B2B9CA8E600A1B2C3 /* KeychainPromptCoordinator.swift in Sources */,
 				1D8F5B052B9C4DFA00A1B2C3 /* PreferencesViewModel.swift in Sources */,
 				1D8F5B0D2B9C4DFA00A1B2C3 /* AppConfig.swift in Sources */,
 				1D8F5B0B2B9C4DFA00A1B2C3 /* FileRouter.swift in Sources */,

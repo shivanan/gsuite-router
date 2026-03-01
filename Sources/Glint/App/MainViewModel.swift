@@ -50,6 +50,7 @@ final class MainViewModel: ObservableObject {
     }
 
     func signIn() {
+        KeychainPromptCoordinator.shared.presentIfNeeded()
         Task {
             do {
                 operationState = .working("Connecting to Google Workspace…")

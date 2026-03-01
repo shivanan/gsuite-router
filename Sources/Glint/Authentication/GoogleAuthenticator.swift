@@ -51,7 +51,6 @@ final class GoogleAuthenticator: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        restore()
     }
 
     func restore() {
