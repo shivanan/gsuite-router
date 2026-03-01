@@ -38,7 +38,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Glint</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.statictype.gsuite-router</string>
+	<string>org.statictype.glint</string>
 	<key>CFBundleName</key>
 	<string>Glint</string>
 	<key>CFBundlePackageType</key>

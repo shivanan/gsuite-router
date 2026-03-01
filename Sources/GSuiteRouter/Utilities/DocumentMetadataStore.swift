@@ -10,7 +10,7 @@ struct DocumentMetadata: Codable {
 }
 
 struct DocumentMetadataStore {
-    private static let attributeName = "org.statictype.gsuite-router"
+    private static let attributeName = "org.statictype.glint"
 
     static func save(_ metadata: DocumentMetadata, to fileURL: URL) throws {
         let data = try JSONEncoder().encode(metadata)
