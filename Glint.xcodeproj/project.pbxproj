@@ -27,6 +27,7 @@
 		1D8F5B112B9C4DFA00A1B2C3 /* DocumentMetadataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5AEC2B9C4DFA00A1B2C3 /* DocumentMetadataStore.swift */; };
 		1D8F5B122B9C4DFA00A1B2C3 /* UserPreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5AED2B9C4DFA00A1B2C3 /* UserPreferenceKeys.swift */; };
 		1D8F5B132B9C4DFA00A1B2C3 /* PerFileAssociationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5AEE2B9C4DFA00A1B2C3 /* PerFileAssociationManager.swift */; };
+		2A967F3E2F54A8F50007921A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A967F3D2F54A8F50007921A /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +54,7 @@
 		1D8F5AF32B9C4DFA00A1B2C3 /* FileRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileRouter.swift; sourceTree = "<group>"; };
 		1D8F5AF42B9C4DFA00A1B2C3 /* AccountSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelector.swift; sourceTree = "<group>"; };
 		2A967F3C2F54A7F40007921A /* Glint.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Glint.entitlements; path = Glint/Glint.entitlements; sourceTree = "<group>"; };
+		2A967F3D2F54A8F50007921A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 				2A967F3C2F54A7F40007921A /* Glint.entitlements */,
 				1D8F5AF62B9C4DFA00A1B2C3 /* Sources/Glint */,
 				1D8F5ADF2B9C4DFA00A1B2C3 /* AppBundle/Info.plist */,
+				2A967F3D2F54A8F50007921A /* Assets.xcassets */,
 				1D8F5A582B9C4DFA00A1B2C3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -217,6 +220,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A967F3E2F54A8F50007921A /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,12 +284,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Glint/Glint.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3K6CXN493J;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = AppBundle/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Glint;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -304,12 +310,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Glint/Glint.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3K6CXN493J;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = AppBundle/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Glint;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
