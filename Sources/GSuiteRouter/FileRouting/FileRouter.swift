@@ -15,6 +15,7 @@ final class FileRouter {
     private let driveUploader: DriveUploader
     private let accountSelector: AccountSelector
     private let workspace = NSWorkspace.shared
+    private let userDefaults = UserDefaults.standard
 
     init(driveUploader: DriveUploader, accountSelector: AccountSelector) {
         self.driveUploader = driveUploader
@@ -34,6 +35,7 @@ final class FileRouter {
 
     private func process(_ classification: SupportedFileKind) async {
         if let metadata = DocumentMetadataStore.load(from: classification.originalURL) {
+            applyPerFilePreferences(to: classification.originalURL)
             await openRemoteDocument(using: metadata)
             return
         }
@@ -66,6 +68,7 @@ final class FileRouter {
                 uploaderVersion: "0.2.0"
             )
             try DocumentMetadataStore.save(metadata, to: url)
+            applyPerFilePreferences(to: url)
             _ = await MainActor.run {
                 workspace.open(uploadResult.webViewLink)
             }
@@ -76,6 +79,19 @@ final class FileRouter {
             eventPublisher.send(.failed(FileRouterError.userCancelled))
         } catch {
             eventPublisher.send(.failed(error))
+        }
+    }
+
+    private func applyPerFilePreferences(to url: URL) {
+        if userDefaults.bool(forKey: UserPreferenceKeys.autoSetDefaultHandlerPerFile) {
+            try? PerFileAssociationManager.applyDefaultHandler(to: url)
+        }
+        if userDefaults.bool(forKey: UserPreferenceKeys.applyCustomIconPerFile) {
+            Task { @MainActor in
+                if let icon = NSApplication.shared.applicationIconImage {
+                    workspace.setIcon(icon, forFile: url.path, options: [])
+                }
+            }
         }
     }
 }

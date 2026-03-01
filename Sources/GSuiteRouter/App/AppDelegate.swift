@@ -32,6 +32,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        UserDefaults.standard.register(defaults: [
+            UserPreferenceKeys.autoSetDefaultHandlerPerFile: false,
+            UserPreferenceKeys.applyCustomIconPerFile: false
+        ])
         configureMenu()
         mainWindowController = MainWindowController(viewModel: viewModel)
         mainWindowController?.showWindow(self)
