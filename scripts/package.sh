@@ -2,7 +2,7 @@
 set -euo pipefail
 
 CONFIGURATION="${CONFIGURATION:-release}"
-PRODUCT_NAME="GSuiteRouter"
+PRODUCT_NAME="Glint"
 BUILD_ROOT=".build/${CONFIGURATION}"
 APP_BUNDLE="dist/${PRODUCT_NAME}.app"
 BINARY_SOURCE="${BUILD_ROOT}/${PRODUCT_NAME}"
@@ -62,8 +62,8 @@ mkdir -p "${APP_BUNDLE}/Contents/Resources"
 cp "${BINARY_SOURCE}" "${APP_BUNDLE}/Contents/MacOS/${PRODUCT_NAME}"
 cp "${INFO_PLIST_SOURCE}" "${APP_BUNDLE}/Contents/Info.plist"
 cp "${SECRETS_SOURCE}" "${APP_BUNDLE}/Contents/Resources/Secrets.plist"
-if [[ -f "AppBundle/GSuiteRouter.icns" ]]; then
-  cp AppBundle/GSuiteRouter.icns "${APP_BUNDLE}/Contents/Resources/"
+if [[ -f "AppBundle/Glint.icns" ]]; then
+  cp AppBundle/Glint.icns "${APP_BUNDLE}/Contents/Resources/"
 fi
 
 

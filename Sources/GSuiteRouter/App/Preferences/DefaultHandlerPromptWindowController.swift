@@ -59,7 +59,7 @@ final class DefaultHandlerPromptWindowController: NSWindowController {
         container.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(container)
 
-        let heading = NSTextField(labelWithString: "Select the file types that should open in GSuite Router by default.")
+        let heading = NSTextField(labelWithString: "Select the file types that should open in Glint by default.")
         heading.font = NSFont.systemFont(ofSize: 14)
         heading.lineBreakMode = .byWordWrapping
 

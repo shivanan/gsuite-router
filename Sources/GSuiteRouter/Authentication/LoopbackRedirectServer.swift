@@ -114,7 +114,7 @@ final class LoopbackRedirectServer: @unchecked Sendable {
     }
 
     private func respondSuccess(connection: NWConnection) {
-        let body = "<html><body>You may return to GSuite Router.</body></html>"
+        let body = "<html><body>You may return to Glint.</body></html>"
         send(connection: connection, status: "200 OK", body: body)
     }
 

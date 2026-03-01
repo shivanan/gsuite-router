@@ -1,10 +1,10 @@
-mkdir -p AppBundle/GSuiteRouter.iconset
+mkdir -p AppBundle/Glint.iconset
 for size in 16 32 64 128 256 512 1024; do
-  sips -z $size $size app-icon.png --out AppBundle/GSuiteRouter.iconset/icon_${size}x${size}.png >/dev/null
+  sips -z $size $size app-icon.png --out AppBundle/Glint.iconset/icon_${size}x${size}.png >/dev/null
   small=$((size/2))
-  cp AppBundle/GSuiteRouter.iconset/icon_${size}x${size}.png \
-     AppBundle/GSuiteRouter.iconset/icon_${small}x${small}@2x.png
+  cp AppBundle/Glint.iconset/icon_${size}x${size}.png \
+     AppBundle/Glint.iconset/icon_${small}x${small}@2x.png
 done
-iconutil -c icns AppBundle/GSuiteRouter.iconset -o AppBundle/GSuiteRouter.icns
-rm -r AppBundle/GSuiteRouter.iconset
+iconutil -c icns AppBundle/Glint.iconset -o AppBundle/Glint.icns
+rm -r AppBundle/Glint.iconset
 

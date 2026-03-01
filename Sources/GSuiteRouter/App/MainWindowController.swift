@@ -11,7 +11,7 @@ final class MainWindowController: NSWindowController {
             defer: false
         )
         window.contentView = hostingView
-        window.title = "GSuite Router"
+        window.title = "Glint"
         window.center()
         super.init(window: window)
     }

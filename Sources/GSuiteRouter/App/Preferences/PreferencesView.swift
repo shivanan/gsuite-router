@@ -12,7 +12,7 @@ struct PreferencesView: View {
                 defaultStatusRow(label: "Word (.docx)", isDefault: viewModel.isWordDefault)
                 defaultStatusRow(label: "Excel (.xlsx)", isDefault: viewModel.isExcelDefault)
             }
-            Text("Use the button below to pick which file types should open with GSuite Router.")
+            Text("Use the button below to pick which file types should open with Glint.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
             Button("Set as the default app for Excel and Word files") {
@@ -21,7 +21,7 @@ struct PreferencesView: View {
             .buttonStyle(.borderedProminent)
             .disabled(viewModel.allKindsAreDefault)
             if viewModel.allKindsAreDefault {
-                Text("GSuite Router already handles Word and Excel files.")
+                Text("Glint already handles Word and Excel files.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -38,7 +38,7 @@ struct PreferencesView: View {
         HStack {
             Image(systemName: isDefault ? "checkmark.circle.fill" : "circle")
                 .foregroundColor(isDefault ? .green : .secondary)
-            Text(isDefault ? "\(label): GSuite Router" : "\(label): Other app")
+            Text(isDefault ? "\(label): Glint" : "\(label): Other app")
         }
     }
 }

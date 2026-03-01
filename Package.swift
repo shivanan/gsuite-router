@@ -4,13 +4,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "GSuiteRouter",
+    name: "Glint",
     platforms: [
         .macOS(.v13)
     ],
     targets: [
         .executableTarget(
-            name: "GSuiteRouter"
+            name: "Glint"
         ),
     ]
 )

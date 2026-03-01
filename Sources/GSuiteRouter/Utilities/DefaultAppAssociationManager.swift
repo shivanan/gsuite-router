@@ -26,7 +26,7 @@ struct DefaultAppAssociationManager {
 
     private let bundleIdentifier: String
 
-    init(bundleIdentifier: String = Bundle.main.bundleIdentifier ?? "org.statictype.GSuiteRouter") {
+    init(bundleIdentifier: String = Bundle.main.bundleIdentifier ?? "org.statictype.Glint") {
         self.bundleIdentifier = bundleIdentifier
     }
 

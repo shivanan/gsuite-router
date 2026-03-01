@@ -28,7 +28,7 @@ struct MainView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("GSuite Router")
+            Text("Glint")
                 .font(.system(size: 28, weight: .bold))
             Text("Route Office files to Google Docs")
                 .font(.subheadline)

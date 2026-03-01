@@ -17,7 +17,7 @@ Native macOS helper that intercepts `.docx` and `.xlsx` files, uploads them to G
 ├── AppBundle/Info.plist         # Bundle metadata & document/URL type declarations
 ├── AppBundle/Secrets.plist.template  # Template for baking OAuth keys into the app
 ├── scripts/package.sh           # Helper to build + wrap the .app bundle
-├── Sources/GSuiteRouter
+├── Sources/Glint
 │   ├── App                      # App delegate + SwiftUI UI layer
 │   ├── Authentication           # GoogleAuthenticator + token models
 │   ├── Drive                    # DriveUploader and upload plumbing
@@ -50,10 +50,10 @@ This launches the Cocoa app directly (SwiftPM spawns an `.app` bundle automatica
 GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com \
 GOOGLE_CLIENT_SECRET=secret \
 CONFIGURATION=release ./scripts/package.sh
-open dist/GSuiteRouter.app
+open dist/Glint.app
 ```
 
-`package.sh` now requires the OAuth secrets (either pre-populated `AppBundle/Secrets.plist` or exported env vars). It emits a Secrets.plist, copies it into `Contents/Resources`, wraps the compiled binary inside `dist/GSuiteRouter.app`, and performs an ad-hoc codesign. You can then drag the app into `/Applications` and set it as the default handler for `.docx`/`.xlsx`.
+`package.sh` now requires the OAuth secrets (either pre-populated `AppBundle/Secrets.plist` or exported env vars). It emits a Secrets.plist, copies it into `Contents/Resources`, wraps the compiled binary inside `dist/Glint.app`, and performs an ad-hoc codesign. You can then drag the app into `/Applications` and set it as the default handler for `.docx`/`.xlsx`.
 
 ## OAuth Scopes Used
 
