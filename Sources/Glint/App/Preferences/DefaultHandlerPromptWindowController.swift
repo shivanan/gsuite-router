@@ -1,5 +1,6 @@
 import AppKit
 
+@MainActor
 final class DefaultHandlerPromptWindowController: NSWindowController {
     private let associationManager: DefaultAppAssociationManager
     private var checkboxMap: [DefaultAppAssociationManager.FileKind: NSButton] = [:]

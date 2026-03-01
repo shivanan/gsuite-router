@@ -1,4 +1,4 @@
-# GSuite Router (macOS)
+# Glint (macOS)
 
 Native macOS helper that intercepts `.docx` and `.xlsx` files, uploads them to Google Drive/Docs, and stamps those files with metadata that points back to the corresponding Google document.
 
@@ -42,7 +42,7 @@ The app automatically launches your default browser for OAuth and listens on `ht
 swift run
 ```
 
-This launches the Cocoa app directly (SwiftPM spawns an `.app` bundle automatically when you run the executable). Once authenticated, double-clicking a `.docx`/`.xlsx` file and choosing GSuite Router as the handler will trigger the routing flow.
+This launches the Cocoa app directly (SwiftPM spawns an `.app` bundle automatically when you run the executable). Once authenticated, double-clicking a `.docx`/`.xlsx` file and choosing Glint as the handler will trigger the routing flow.
 
 ### Create a distributable `.app`
 
@@ -54,6 +54,10 @@ open dist/Glint.app
 ```
 
 `package.sh` now requires the OAuth secrets (either pre-populated `AppBundle/Secrets.plist` or exported env vars). It emits a Secrets.plist, copies it into `Contents/Resources`, wraps the compiled binary inside `dist/Glint.app`, and performs an ad-hoc codesign. You can then drag the app into `/Applications` and set it as the default handler for `.docx`/`.xlsx`.
+
+### Xcode project
+
+Prefer Xcode? Open `Glint.xcodeproj` and select the Glint scheme. The project points at the same `Sources/Glint` tree and uses `AppBundle/Info.plist`, so you get full IDE support, debugging, and signing customization without converting the code. Remember to provide `AppBundle/Secrets.plist` (or set the `GOOGLE_CLIENT_*` env vars in your scheme) before running from Xcode.
 
 ## OAuth Scopes Used
 

@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 
+@MainActor
 final class PreferencesWindowController: NSWindowController {
     private let viewModel: PreferencesViewModel
 

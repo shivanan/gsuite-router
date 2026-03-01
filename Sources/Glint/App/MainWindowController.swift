@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 
+@MainActor
 final class MainWindowController: NSWindowController {
     init(viewModel: MainViewModel) {
         let hostingView = NSHostingView(rootView: MainView(viewModel: viewModel))
