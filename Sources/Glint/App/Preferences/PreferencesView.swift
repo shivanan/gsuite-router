@@ -8,8 +8,8 @@ struct PreferencesView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Default App Settings")
-                .font(.system(size: 20, weight: .semibold))
+//            Text("Default App Settings")
+//                .font(.system(size: 20, weight: .semibold))
             VStack(alignment: .leading, spacing: 12) {
                 defaultStatusRow(label: "Word (.docx)", isDefault: viewModel.isWordDefault)
                 defaultStatusRow(label: "Excel (.xlsx)", isDefault: viewModel.isExcelDefault)

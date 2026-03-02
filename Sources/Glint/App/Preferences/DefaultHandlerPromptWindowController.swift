@@ -1,11 +1,10 @@
 import AppKit
+import SwiftUI
 
 @MainActor
 final class DefaultHandlerPromptWindowController: NSWindowController {
     private let associationManager: DefaultAppAssociationManager
-    private var checkboxMap: [DefaultAppAssociationManager.FileKind: NSButton] = [:]
-    private let applyButton = NSButton(title: "Set as Default", target: nil, action: nil)
-    private let cancelButton = NSButton(title: "Not Now", target: nil, action: nil)
+    private let state = DefaultHandlerPromptState()
     private var statuses: [DefaultAppAssociationManager.FileKind: Bool] = [:]
 
     var onCompletion: (() -> Void)?
@@ -24,7 +23,12 @@ final class DefaultHandlerPromptWindowController: NSWindowController {
         panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
         panel.center()
         super.init(window: panel)
-        setupUI()
+        let content = DefaultHandlerPromptView(
+            state: state,
+            applyAction: { [weak self] in self?.applySelection() },
+            cancelAction: { [weak self] in self?.cancelSelection() }
+        )
+        panel.contentView = NSHostingView(rootView: content)
         refreshState()
     }
 
@@ -33,17 +37,9 @@ final class DefaultHandlerPromptWindowController: NSWindowController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    var hasUnsetDefaults: Bool {
-        statuses.contains(where: { $0.value == false })
-    }
-
     func refreshState() {
         statuses = associationManager.associationStatuses()
-        for kind in DefaultAppAssociationManager.FileKind.allCases {
-            let state = statuses[kind] ?? false
-            checkboxMap[kind]?.state = state ? .off : .on
-        }
-        updateApplyButtonState()
+        state.update(with: statuses)
     }
 
     override func close() {
@@ -52,66 +48,8 @@ final class DefaultHandlerPromptWindowController: NSWindowController {
         onDismiss?()
     }
 
-    private func setupUI() {
-        guard let contentView = window?.contentView else { return }
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-
-        let container = NSStackView()
-        container.orientation = .vertical
-        container.spacing = 12
-        container.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(container)
-
-        let heading = NSTextField(labelWithString: "Select the file types that should open in Glint by default.")
-        heading.font = NSFont.systemFont(ofSize: 14)
-        heading.lineBreakMode = .byWordWrapping
-
-        container.addArrangedSubview(heading)
-
-        let checkboxStack = NSStackView()
-        checkboxStack.orientation = .vertical
-        checkboxStack.spacing = 8
-
-        for kind in DefaultAppAssociationManager.FileKind.allCases {
-            let checkbox = NSButton(checkboxWithTitle: kind.displayLabel, target: self, action: #selector(checkboxToggled(_:)))
-            checkbox.translatesAutoresizingMaskIntoConstraints = false
-            checkboxStack.addArrangedSubview(checkbox)
-            checkboxMap[kind] = checkbox
-        }
-        container.addArrangedSubview(checkboxStack)
-
-        let buttonStack = NSStackView()
-        buttonStack.orientation = .horizontal
-        buttonStack.spacing = 8
-        buttonStack.alignment = .trailing
-
-        applyButton.target = self
-        applyButton.action = #selector(applySelection)
-        applyButton.keyEquivalent = "\r"
-        cancelButton.target = self
-        cancelButton.action = #selector(cancelSelection)
-
-        buttonStack.addArrangedSubview(cancelButton)
-        buttonStack.addArrangedSubview(applyButton)
-
-        container.addArrangedSubview(buttonStack)
-
-        NSLayoutConstraint.activate([
-            container.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            container.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            container.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            container.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -20)
-        ])
-    }
-
-    @objc private func checkboxToggled(_ sender: NSButton) {
-        updateApplyButtonState()
-    }
-
-    @objc private func applySelection() {
-        let selectedKinds = checkboxMap.compactMap { kind, button in
-            button.state == .on ? kind : nil
-        }
+    private func applySelection() {
+        let selectedKinds = state.selectedKinds
         guard selectedKinds.isEmpty == false else { return }
         do {
             try associationManager.setAsDefault(for: selectedKinds)
@@ -124,12 +62,7 @@ final class DefaultHandlerPromptWindowController: NSWindowController {
         }
     }
 
-    @objc private func cancelSelection() {
+    private func cancelSelection() {
         close()
-    }
-
-    private func updateApplyButtonState() {
-        let anySelected = checkboxMap.values.contains { $0.state == .on }
-        applyButton.isEnabled = anySelected
     }
 }
