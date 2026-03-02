@@ -65,6 +65,12 @@ Prefer Xcode? Open `Glint.xcodeproj` and select the Glint scheme. The project po
 
 Because the secrets file lives inside `AppBundle/` (and is git-ignored), both SwiftPM and Xcode builds automatically bake it into the bundle, so you don’t have to set scheme environment variables unless you prefer that workflow.
 
+## Software Updates via Sparkle 2
+
+Glint embeds Sparkle 2 (`SPUStandardUpdaterController`) and exposes **Glint ▸ Check for Updates…** in the app menu. Automatic checks are enabled through `SUEnableAutomaticChecks` in `AppBundle/Info.plist`, and the default feed URL is `https://updates.glint.statictype.org/appcast.xml`. Point that URL at any HTTPS endpoint that serves a Sparkle-compatible RSS feed.
+
+If you deploy releases with Next.js, copy `docs/NextJSAppcastRouteExample.ts` into `app/api/appcast/route.ts` of your web project. Your CI system can rewrite the `releases` array during publish (version, short version, signature from `generate_appcast`, ZIP length, etc.) and push the binary to a CDN. Sparkle will download the enclosure, verify the EdDSA signature, and prompt the user to update.
+
 ## OAuth Scopes Used
 
 - `https://www.googleapis.com/auth/drive.file` – upload and manage files the app creates

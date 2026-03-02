@@ -1,6 +1,7 @@
 import AppKit
 import Combine
 import Carbon
+import Sparkle
 
 @MainActor
 @main
@@ -12,6 +13,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var fileRouter = FileRouter(driveUploader: driveUploader, accountSelector: accountSelector)
     private lazy var viewModel = MainViewModel(authenticator: authenticator, fileRouter: fileRouter)
     private let defaultAppAssociationManager = DefaultAppAssociationManager()
+    private let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
     private lazy var preferencesWindowController = PreferencesWindowController(
         viewModel: PreferencesViewModel(associationManager: defaultAppAssociationManager),
         setDefaultAction: { [weak self] in
@@ -149,6 +151,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let aboutItem = NSMenuItem(title: "About Glint", action: #selector(showAboutPanel), keyEquivalent: "")
         aboutItem.target = self
         appMenu.addItem(aboutItem)
+        let updateItem = NSMenuItem(title: "Check for Updates…", action: #selector(checkForUpdates(_:)), keyEquivalent: "")
+        updateItem.target = self
+        appMenu.addItem(updateItem)
         appMenu.addItem(withTitle: "Preferences…", action: #selector(openPreferences), keyEquivalent: ",")
         appMenu.addItem(NSMenuItem.separator())
         appMenu.addItem(withTitle: "Quit Glint", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -199,6 +204,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         let decoded = path.removingPercentEncoding ?? path
         return URL(fileURLWithPath: decoded)
+    }
+
+    @objc private func checkForUpdates(_ sender: Any?) {
+        updaterController.checkForUpdates(sender)
     }
 
     @objc private func showAboutPanel() {
