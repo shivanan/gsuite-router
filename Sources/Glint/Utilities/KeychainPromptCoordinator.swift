@@ -8,14 +8,21 @@ final class KeychainPromptCoordinator {
     private init() {}
 
     func presentIfNeeded() {
-        guard defaults.bool(forKey: UserPreferenceKeys.hasAcknowledgedKeychainPrompt) == false else { return }
-        let alert = NSAlert()
-        alert.messageText = "Allow Glint to access your Keychain"
-        alert.informativeText = """
-Glint stores Google account tokens securely in the macOS Keychain. macOS will now show a system dialog asking whether Glint can read those tokens. Please choose “Always Allow” so you won’t see the prompt again.
-"""
-        alert.addButton(withTitle: "Continue")
-        alert.runModal()
-        defaults.set(true, forKey: UserPreferenceKeys.hasAcknowledgedKeychainPrompt)
+        //guard defaults.bool(forKey: UserPreferenceKeys.hasAcknowledgedKeychainPrompt) == false else {  }
+        let controller = KeychainPromptWindowController(image: promptImage())
+        let response = controller.presentModally()
+        if response == .OK {
+            defaults.set(true, forKey: UserPreferenceKeys.hasAcknowledgedKeychainPrompt)
+        }
+    }
+
+    private func promptImage() -> NSImage? {
+        if let url = Bundle.main.url(forResource: "KeychainPrompt", withExtension: "png") {
+            return NSImage(contentsOf: url)
+        }
+        if let url = Bundle.main.url(forResource: "KeychainPrompt", withExtension: "jpg") {
+            return NSImage(contentsOf: url)
+        }
+        return nil
     }
 }

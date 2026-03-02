@@ -28,7 +28,10 @@
 		1D8F5B122B9C4DFA00A1B2C3 /* UserPreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5AED2B9C4DFA00A1B2C3 /* UserPreferenceKeys.swift */; };
 		1D8F5B132B9C4DFA00A1B2C3 /* PerFileAssociationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5AEE2B9C4DFA00A1B2C3 /* PerFileAssociationManager.swift */; };
 		1D8F5B9B2B9CA8E600A1B2C3 /* KeychainPromptCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5B9A2B9CA8E600A1B2C3 /* KeychainPromptCoordinator.swift */; };
+		1D8F5B9E2B9CA94B00A1B2C3 /* KeychainPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5B9C2B9CA94B00A1B2C3 /* KeychainPromptView.swift */; };
+		1D8F5B9F2B9CA94B00A1B2C3 /* KeychainPromptWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5B9D2B9CA94B00A1B2C3 /* KeychainPromptWindowController.swift */; };
 		2A967F3E2F54A8F50007921A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A967F3D2F54A8F50007921A /* Assets.xcassets */; };
+		2A967F402F54BA5E0007921A /* KeychainPrompt.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A967F3F2F54BA5E0007921A /* KeychainPrompt.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,8 +58,11 @@
 		1D8F5AF32B9C4DFA00A1B2C3 /* FileRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileRouter.swift; sourceTree = "<group>"; };
 		1D8F5AF42B9C4DFA00A1B2C3 /* AccountSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelector.swift; sourceTree = "<group>"; };
 		1D8F5B9A2B9CA8E600A1B2C3 /* KeychainPromptCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPromptCoordinator.swift; sourceTree = "<group>"; };
+		1D8F5B9C2B9CA94B00A1B2C3 /* KeychainPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPromptView.swift; sourceTree = "<group>"; };
+		1D8F5B9D2B9CA94B00A1B2C3 /* KeychainPromptWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPromptWindowController.swift; sourceTree = "<group>"; };
 		2A967F3C2F54A7F40007921A /* Glint.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Glint.entitlements; path = Glint/Glint.entitlements; sourceTree = "<group>"; };
 		2A967F3D2F54A8F50007921A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2A967F3F2F54BA5E0007921A /* KeychainPrompt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = KeychainPrompt.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +79,7 @@
 		1D8F5A4F2B9C4DFA00A1B2C3 = {
 			isa = PBXGroup;
 			children = (
+				2A967F3F2F54BA5E0007921A /* KeychainPrompt.png */,
 				2A967F3C2F54A7F40007921A /* Glint.entitlements */,
 				1D8F5AF62B9C4DFA00A1B2C3 /* Sources/Glint */,
 				1D8F5ADF2B9C4DFA00A1B2C3 /* AppBundle/Info.plist */,
@@ -109,6 +116,8 @@
 				1D8F5AE12B9C4DFA00A1B2C3 /* MainView.swift */,
 				1D8F5AE22B9C4DFA00A1B2C3 /* MainViewModel.swift */,
 				1D8F5AE32B9C4DFA00A1B2C3 /* MainWindowController.swift */,
+				1D8F5B9C2B9CA94B00A1B2C3 /* KeychainPromptView.swift */,
+				1D8F5B9D2B9CA94B00A1B2C3 /* KeychainPromptWindowController.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -224,6 +233,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A967F3E2F54A8F50007921A /* Assets.xcassets in Resources */,
+				2A967F402F54BA5E0007921A /* KeychainPrompt.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +253,8 @@
 				1D8F5B012B9C4DFA00A1B2C3 /* MainView.swift in Sources */,
 				1D8F5B102B9C4DFA00A1B2C3 /* KeychainStore.swift in Sources */,
 				1D8F5B9B2B9CA8E600A1B2C3 /* KeychainPromptCoordinator.swift in Sources */,
+				1D8F5B9E2B9CA94B00A1B2C3 /* KeychainPromptView.swift in Sources */,
+				1D8F5B9F2B9CA94B00A1B2C3 /* KeychainPromptWindowController.swift in Sources */,
 				1D8F5B052B9C4DFA00A1B2C3 /* PreferencesViewModel.swift in Sources */,
 				1D8F5B0D2B9C4DFA00A1B2C3 /* AppConfig.swift in Sources */,
 				1D8F5B0B2B9C4DFA00A1B2C3 /* FileRouter.swift in Sources */,
