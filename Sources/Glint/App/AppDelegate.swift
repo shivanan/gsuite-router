@@ -146,7 +146,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let appItem = NSMenuItem()
         mainMenu.addItem(appItem)
         let appMenu = NSMenu()
-        appMenu.addItem(withTitle: "About Glint", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        let aboutItem = NSMenuItem(title: "About Glint", action: #selector(showAboutPanel), keyEquivalent: "")
+        aboutItem.target = self
+        appMenu.addItem(aboutItem)
         appMenu.addItem(withTitle: "Preferences…", action: #selector(openPreferences), keyEquivalent: ",")
         appMenu.addItem(NSMenuItem.separator())
         appMenu.addItem(withTitle: "Quit Glint", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -197,6 +199,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         let decoded = path.removingPercentEncoding ?? path
         return URL(fileURLWithPath: decoded)
+    }
+
+    @objc private func showAboutPanel() {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+        let informative = """
+Glint routes Word and Excel files to Google Docs, handles uploads, and remembers your shortcuts. Visit the website to learn more.
+"""
+        let alert = NSAlert()
+        alert.messageText = version.isEmpty ? "Glint" : "Glint \(version)"
+        alert.informativeText = informative
+        alert.addButton(withTitle: "Open Website")
+        alert.addButton(withTitle: "OK")
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn, let url = URL(string: "https://glint.statictype.org") {
+            NSWorkspace.shared.open(url)
+        }
     }
 }
 
