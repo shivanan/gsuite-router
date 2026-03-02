@@ -32,6 +32,7 @@
 		1D8F5B9F2B9CA94B00A1B2C3 /* KeychainPromptWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5B9D2B9CA94B00A1B2C3 /* KeychainPromptWindowController.swift */; };
 		2A967F3E2F54A8F50007921A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A967F3D2F54A8F50007921A /* Assets.xcassets */; };
 		2A967F402F54BA5E0007921A /* KeychainPrompt.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A967F3F2F54BA5E0007921A /* KeychainPrompt.png */; };
+		2A967F422F5578780007921A /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2A967F412F5578780007921A /* Secrets.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -63,6 +64,7 @@
 		2A967F3C2F54A7F40007921A /* Glint.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Glint.entitlements; path = Glint/Glint.entitlements; sourceTree = "<group>"; };
 		2A967F3D2F54A8F50007921A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2A967F3F2F54BA5E0007921A /* KeychainPrompt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = KeychainPrompt.png; sourceTree = "<group>"; };
+		2A967F412F5578780007921A /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 				2A967F3C2F54A7F40007921A /* Glint.entitlements */,
 				1D8F5AF62B9C4DFA00A1B2C3 /* Sources/Glint */,
 				1D8F5ADF2B9C4DFA00A1B2C3 /* AppBundle/Info.plist */,
+				2A967F412F5578780007921A /* Secrets.plist */,
 				2A967F3D2F54A8F50007921A /* Assets.xcassets */,
 				1D8F5A582B9C4DFA00A1B2C3 /* Products */,
 			);
@@ -233,6 +236,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A967F3E2F54A8F50007921A /* Assets.xcassets in Resources */,
+				2A967F422F5578780007921A /* Secrets.plist in Resources */,
 				2A967F402F54BA5E0007921A /* KeychainPrompt.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -39,6 +39,7 @@ The app automatically launches your default browser for OAuth and listens on `ht
 
 ```
 # From the repo root
+cp AppBundle/Secrets.plist.template AppBundle/Secrets.plist   # edit locally with real values
 swift run
 ```
 
@@ -57,7 +58,12 @@ open dist/Glint.app
 
 ### Xcode project
 
-Prefer Xcode? Open `Glint.xcodeproj` and select the Glint scheme. The project points at the same `Sources/Glint` tree and uses `AppBundle/Info.plist`, so you get full IDE support, debugging, and signing customization without converting the code. Remember to provide `AppBundle/Secrets.plist` (or set the `GOOGLE_CLIENT_*` env vars in your scheme) before running from Xcode.
+Prefer Xcode? Open `Glint.xcodeproj` and select the Glint scheme. The project points at the same `Sources/Glint` tree and uses `AppBundle/Info.plist`, so you get full IDE support, debugging, and signing customization. Before you hit Run:
+
+1. Copy the template: `cp AppBundle/Secrets.plist.template AppBundle/Secrets.plist`.
+2. Fill in the real `GoogleClientID`, `GoogleClientSecret`, and optional Drive folder ID.
+
+Because the secrets file lives inside `AppBundle/` (and is git-ignored), both SwiftPM and Xcode builds automatically bake it into the bundle, so you don’t have to set scheme environment variables unless you prefer that workflow.
 
 ## OAuth Scopes Used
 

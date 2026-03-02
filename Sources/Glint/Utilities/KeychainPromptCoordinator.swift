@@ -8,7 +8,7 @@ final class KeychainPromptCoordinator {
     private init() {}
 
     func presentIfNeeded() {
-        //guard defaults.bool(forKey: UserPreferenceKeys.hasAcknowledgedKeychainPrompt) == false else {  }
+        guard defaults.bool(forKey: UserPreferenceKeys.hasAcknowledgedKeychainPrompt) == false else { return; }
         let controller = KeychainPromptWindowController(image: promptImage())
         let response = controller.presentModally()
         if response == .OK {
