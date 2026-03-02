@@ -24,6 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var hasPromptedForDefaultsThisLaunch = false
     private var cancellables: Set<AnyCancellable> = []
     private var shouldTerminateAfterProcessing: Bool = false
+    private var hasFinishedLaunching = false
 
     static func main() {
         let app = NSApplication.shared
@@ -57,10 +58,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         observeFileRouting()
         processLaunchArguments()
         maybePromptForDefaultHandlers()
+        hasFinishedLaunching = true
     }
 
     @objc private func handleAppleEventOpenDocuments(event: NSAppleEventDescriptor, withReply replyEvent: NSAppleEventDescriptor?) {
         guard let list = event.paramDescriptor(forKeyword: keyDirectObject) else { return }
+        markShouldTerminateIfLaunchingDueToFileRequest()
         var urls: [URL] = []
         for index in 1...list.numberOfItems {
             if let path = list.atIndex(index)?.stringValue {
@@ -80,16 +83,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func application(_ sender: NSApplication, openFile filename: String) -> Bool {
+        markShouldTerminateIfLaunchingDueToFileRequest()
         let url = urlFromDockPath(filename)
         return fileRouter.handleFileOpen(url: url)
     }
 
     func application(_ sender: NSApplication, openFiles filenames: [String]) {
+        markShouldTerminateIfLaunchingDueToFileRequest()
         filenames.forEach { _ = fileRouter.handleFileOpen(url: urlFromDockPath($0)) }
         NSApp.reply(toOpenOrPrint: .success)
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
+        markShouldTerminateIfLaunchingDueToFileRequest()
         urls.forEach { _ = fileRouter.handleFileOpen(url: $0) }
         NSApp.reply(toOpenOrPrint: .success)
     }
@@ -97,10 +103,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func processLaunchArguments() {
         let args = CommandLine.arguments.dropFirst()
         guard args.isEmpty == false else { return }
-        shouldTerminateAfterProcessing = true
+
         args.forEach { argument in
             let url = urlFromDockPath(argument)
-            _ = fileRouter.handleFileOpen(url: url)
+            let processed = fileRouter.handleFileOpen(url: url)
+            if (!shouldTerminateAfterProcessing && processed) {
+                markShouldTerminateIfLaunchingDueToFileRequest()
+            }
         }
     }
 
@@ -204,6 +213,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         let decoded = path.removingPercentEncoding ?? path
         return URL(fileURLWithPath: decoded)
+    }
+
+    private func markShouldTerminateIfLaunchingDueToFileRequest() {
+        guard shouldTerminateAfterProcessing == false else { return }
+        if hasFinishedLaunching == false || NSRunningApplication.current.isFinishedLaunching == false {
+            shouldTerminateAfterProcessing = true
+        }
     }
 
     @objc private func checkForUpdates(_ sender: Any?) {
