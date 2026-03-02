@@ -31,6 +31,7 @@
 		1D8F5B9E2B9CA94B00A1B2C3 /* KeychainPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5B9C2B9CA94B00A1B2C3 /* KeychainPromptView.swift */; };
 		1D8F5B9F2B9CA94B00A1B2C3 /* KeychainPromptWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5B9D2B9CA94B00A1B2C3 /* KeychainPromptWindowController.swift */; };
 		1D8F5BA02B9CA9B300A1B2C3 /* DefaultHandlerPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5BA12B9CA9B300A1B2C3 /* DefaultHandlerPromptView.swift */; };
+		1D8F5BA42B9CAB2C00A1B2C3 /* ProfileImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8F5BA32B9CAB2C00A1B2C3 /* ProfileImageLoader.swift */; };
 		2A967F3E2F54A8F50007921A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A967F3D2F54A8F50007921A /* Assets.xcassets */; };
 		2A967F402F54BA5E0007921A /* KeychainPrompt.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A967F3F2F54BA5E0007921A /* KeychainPrompt.png */; };
 		2A967F422F5578780007921A /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2A967F412F5578780007921A /* Secrets.plist */; };
@@ -63,6 +64,7 @@
 		1D8F5B9C2B9CA94B00A1B2C3 /* KeychainPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPromptView.swift; sourceTree = "<group>"; };
 		1D8F5B9D2B9CA94B00A1B2C3 /* KeychainPromptWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPromptWindowController.swift; sourceTree = "<group>"; };
 		1D8F5BA12B9CA9B300A1B2C3 /* DefaultHandlerPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultHandlerPromptView.swift; sourceTree = "<group>"; };
+		1D8F5BA32B9CAB2C00A1B2C3 /* ProfileImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageLoader.swift; sourceTree = "<group>"; };
 		2A967F3C2F54A7F40007921A /* Glint.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Glint.entitlements; path = Glint/Glint.entitlements; sourceTree = "<group>"; };
 		2A967F3D2F54A8F50007921A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2A967F3F2F54BA5E0007921A /* KeychainPrompt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = KeychainPrompt.png; sourceTree = "<group>"; };
@@ -163,6 +165,7 @@
 				1D8F5AEC2B9C4DFA00A1B2C3 /* DocumentMetadataStore.swift */,
 				1D8F5AED2B9C4DFA00A1B2C3 /* UserPreferenceKeys.swift */,
 				1D8F5AEE2B9C4DFA00A1B2C3 /* PerFileAssociationManager.swift */,
+				1D8F5BA32B9CAB2C00A1B2C3 /* ProfileImageLoader.swift */,
 				1D8F5B9A2B9CA8E600A1B2C3 /* KeychainPromptCoordinator.swift */,
 			);
 			path = Utilities;
@@ -263,6 +266,7 @@
 				1D8F5B9E2B9CA94B00A1B2C3 /* KeychainPromptView.swift in Sources */,
 				1D8F5B9F2B9CA94B00A1B2C3 /* KeychainPromptWindowController.swift in Sources */,
 				1D8F5BA02B9CA9B300A1B2C3 /* DefaultHandlerPromptView.swift in Sources */,
+				1D8F5BA42B9CAB2C00A1B2C3 /* ProfileImageLoader.swift in Sources */,
 				1D8F5B052B9C4DFA00A1B2C3 /* PreferencesViewModel.swift in Sources */,
 				1D8F5B0D2B9C4DFA00A1B2C3 /* AppConfig.swift in Sources */,
 				1D8F5B0B2B9C4DFA00A1B2C3 /* FileRouter.swift in Sources */,

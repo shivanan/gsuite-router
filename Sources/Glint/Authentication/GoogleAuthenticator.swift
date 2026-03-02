@@ -83,7 +83,7 @@ final class GoogleAuthenticator: NSObject, ObservableObject {
             })
             let tokens = try await exchangeCode(from: callbackURL, redirectURI: redirectURL.absoluteString, expectedState: stateToken)
             let userInfo = try await fetchUserInfo(accessToken: tokens.accessToken)
-            upsertAccount(id: userInfo.sub, email: userInfo.email, tokens: tokens)
+            upsertAccount(id: userInfo.sub, email: userInfo.email, tokens: tokens, photoURL: userInfo.picture)
             self.state = .ready
         } catch {
             self.state = .signedOut
@@ -208,12 +208,13 @@ final class GoogleAuthenticator: NSObject, ObservableObject {
         return try JSONDecoder().decode(UserInfo.self, from: data)
     }
 
-    private func upsertAccount(id: String, email: String, tokens: AuthTokens) {
+    private func upsertAccount(id: String, email: String, tokens: AuthTokens, photoURL: URL?) {
         if let index = accounts.firstIndex(where: { $0.id == id }) {
             accounts[index].email = email
             accounts[index].tokens = tokens
+            accounts[index].photoURL = photoURL
         } else {
-            let account = GoogleAccount(id: id, email: email, tokens: tokens, preferredFolderName: nil, preferredFolderID: nil)
+            let account = GoogleAccount(id: id, email: email, tokens: tokens, preferredFolderName: nil, preferredFolderID: nil, photoURL: photoURL)
             accounts.append(account)
         }
         persistAccounts()
@@ -274,11 +275,13 @@ struct GoogleAccount: Identifiable, Codable {
     var tokens: AuthTokens
     var preferredFolderName: String?
     var preferredFolderID: String?
+    var photoURL: URL?
 }
 
 private struct UserInfo: Decodable {
     let email: String
     let sub: String
+    let picture: URL?
 }
 
 private extension Array where Element == URLQueryItem {

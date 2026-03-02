@@ -16,10 +16,12 @@ final class MainViewModel: ObservableObject {
     @Published private(set) var accounts: [GoogleAccount]
     @Published var operationState: OperationState = .idle
     @Published var activeAccountEmail: String?
+    @Published var accountAvatars: [String: NSImage] = [:]
 
     private let authenticator: GoogleAuthenticator
     private let fileRouter: FileRouter
     private var cancellables: Set<AnyCancellable> = []
+    private let imageLoader = ProfileImageLoader()
 
     init(authenticator: GoogleAuthenticator, fileRouter: FileRouter) {
         self.authenticator = authenticator
@@ -38,6 +40,7 @@ final class MainViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] accounts in
                 self?.accounts = accounts
+                self?.loadAvatars(for: accounts)
             }
             .store(in: &cancellables)
 
@@ -47,6 +50,8 @@ final class MainViewModel: ObservableObject {
                 self?.handle(event: event)
             }
             .store(in: &cancellables)
+
+        loadAvatars(for: authenticator.accounts)
     }
 
     func signIn() {
@@ -128,6 +133,24 @@ final class MainViewModel: ObservableObject {
                 operationState = .failed(error.localizedDescription)
             }
             activeAccountEmail = nil
+        }
+    }
+
+    private func loadAvatars(for accounts: [GoogleAccount]) {
+        for account in accounts {
+            guard let url = account.photoURL else {
+                accountAvatars[account.id] = nil
+                continue
+            }
+            Task.detached { [weak self] in
+                guard let self else { return }
+                if let data = await self.imageLoader.imageData(from: url),
+                   let image = NSImage(data: data) {
+                    await MainActor.run {
+                        self.accountAvatars[account.id] = image
+                    }
+                }
+            }
         }
     }
 }

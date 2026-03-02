@@ -1,6 +1,7 @@
 import SwiftUI
 import Foundation
 import UniformTypeIdentifiers
+import AppKit
 
 struct MainView: View {
     @ObservedObject var viewModel: MainViewModel
@@ -46,26 +47,31 @@ struct MainView: View {
             } else {
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(viewModel.accounts) { account in
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(account.email)
-                                .font(.body)
-                            Text("ID: \(account.id)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text(folderDescription(for: account))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            HStack(spacing: 12) {
-                                Button("Set Folder…") {
-                                    viewModel.configureFolder(accountID: account.id)
+                        HStack(alignment: .top, spacing: 12) {
+                            avatarView(for: account)
+                                .frame(width: 44, height: 44)
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(account.email)
+                                    .font(.body)
+                                Text("ID: \(account.id)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text(folderDescription(for: account))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                HStack(spacing: 12) {
+                                    Button("Set Folder…") {
+                                        viewModel.configureFolder(accountID: account.id)
+                                    }
+                                    .buttonStyle(.bordered)
+                                    Button("Sign Out") {
+                                        viewModel.signOut(accountID: account.id)
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .tint(.red)
                                 }
-                                .buttonStyle(.bordered)
-                                Button("Sign Out") {
-                                    viewModel.signOut(accountID: account.id)
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .tint(.red)
                             }
+                            Spacer()
                         }
                         .padding(12)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -124,6 +130,28 @@ private extension MainView {
             return "Uploads go to \"\(folder)\" in Google Drive."
         }
         return "Uploads go to My Drive (or the global default folder)."
+    }
+
+    func avatarView(for account: GoogleAccount) -> some View {
+        if let image = viewModel.accountAvatars[account.id] {
+            return AnyView(
+                Image(nsImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(Color.white.opacity(0.2), lineWidth: 1))
+            )
+        }
+        let initial = account.email.prefix(1).uppercased()
+        return AnyView(
+            Circle()
+                .fill(Color.gray.opacity(0.25))
+                .overlay(
+                    Text(initial)
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                )
+        )
     }
 
     func handleDrop(providers: [NSItemProvider]) -> Bool {
